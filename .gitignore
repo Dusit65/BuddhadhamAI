@@ -1,0 +1,8 @@
+/.dist
+/node_modules
+.env
+embeddings.npy
+metadata.pkl
+__pycache__
+documents/documentsPython/__pycache__
+ask_cli.log

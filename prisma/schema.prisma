@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model chat_tb {
+  chatId     Int      @id @default(autoincrement())
+  chatHeader String   @db.NVarChar(50)
+  createdAt  DateTime @default(now()) //UTC Time
+  
+  qnas       qNa_tb[]
+}
+
+model qNa_tb {
+  qNaId    Int      @id @default(autoincrement())
+  chatId   Int
+  qNaWords String   @db.NVarChar(Max)
+  qNaType  String   @db.Char(1)
+  createdAt  DateTime @default(now()) //UTC Time
+  
+  chat     chat_tb  @relation(fields: [chatId], references: [chatId])
+}
