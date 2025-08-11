@@ -9,19 +9,13 @@ import time
 import traceback
 import datetime
 from reDocuments import reDocuments
-from debugger import format_duration
+from debugger import format_duration, log
 
 def clear_screen():
     if os.name == 'nt':  # Windows
         os.system('cls')
     else:  # Unix/Linux/Mac
         os.system('clear')
-        
-def write_log(log_message):
-    log_file = "ask_cli.log"
-    # timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(log_message)
 
 EMB_PATH = "embeddings.npy"
 META_PATH = "metadata.pkl"
@@ -32,18 +26,18 @@ end = None
 
 def load_all_documents_pickle(path=DOCS_ALL_PATH):
     if not os.path.isfile(path):
-        # print(f"ไม่พบไฟล์ {path} รัน reDocuments() แทน")
+        log(f"ไม่พบไฟล์ {path} รัน reDocuments() แทน")
         reDocuments()
         import time
         time.sleep(2)  # รอไฟล์ถูกเขียนและระบบไฟล์อัปเดต
     try:
         with open(path, "rb") as f:
             docs = pickle.load(f)
-        # print(f"โหลดเอกสารทั้งหมดจาก {path} จำนวน {len(docs)} รายการ")
+        log(f"โหลดเอกสารทั้งหมดจาก {path} จำนวน {len(docs)} รายการ")
         return docs
     except Exception as e:
-        # print(f"เกิดข้อผิดพลาดขณะโหลดไฟล์ {path}: {e}")
-        # print("รัน reDocuments() แทน")
+        log(f"เกิดข้อผิดพลาดขณะโหลดไฟล์ {path}: {e}")
+        log("รัน reDocuments() แทน")
         reDocuments()
         time.sleep(2)
         # พยายามโหลดใหม่
@@ -153,7 +147,7 @@ def ask_cli():
         result = {"rejected": True, "answer": "กรุณาถามคำถาม", "references": "ไม่มี", "duration": 0}
         data = {"data": result}
         json_str = json.dumps(data)
-        write_log(json_str)
+        log(json_str)
         print(json_str)
         sys.exit(0)
         
@@ -162,6 +156,7 @@ def ask_cli():
     result = ask(message, index, metadata)
     data = {"data": result}
     json_str = json.dumps(data)
+    log(json_str)
     print(json_str)
     sys.exit(0)
 

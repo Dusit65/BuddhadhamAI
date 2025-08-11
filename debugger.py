@@ -31,3 +31,9 @@ def format_duration(seconds: float) -> str:
     parts.append(f"{seconds:.6f} วิ.")
 
     return " ".join(parts)
+
+def log(log_message):
+    log_file = "ask_cli.log"
+    # timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(log_message)
