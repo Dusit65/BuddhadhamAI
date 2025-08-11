@@ -2,6 +2,7 @@
 import sys
 import os
 import pickle
+import json
 import numpy as np
 import faiss
 import ollama
@@ -16,6 +17,9 @@ def clear_screen():
         os.system('cls')
     else:  # Unix/Linux/Mac
         os.system('clear')
+
+with open("buddhamAI_cli.log", "r+") as f:
+    f.truncate(0)
 
 EMB_PATH = "embeddings.npy"
 META_PATH = "metadata.pkl"
@@ -37,84 +41,101 @@ def load_all_documents_pickle(path=DOCS_ALL_PATH):
         return docs
     except Exception as e:
         log(f"เกิดข้อผิดพลาดขณะโหลดไฟล์ {path}: {e}")
-        log("รัน reDocuments() แทน")
+        log("กำลัง reDocuments()")
         reDocuments()
         time.sleep(2)
-        # พยายามโหลดใหม่
         with open(path, "rb") as f:
             docs = pickle.load(f)
         return docs
 
 def flatten_docs(raw):
     docs = []
-    for book_key, chapters in raw.items():
+    for book_name, chapters in raw.items():
         for chapter_key, pages in chapters.items():
             for page_key, content in pages.items():
-                book_num = int(book_key.replace("เล่มที่ ", ""))
-                chapter_num = int(chapter_key.replace("บทที่ ", ""))
-                page_num = int(page_key.replace("หน้า ", ""))
+                chapter_num = int(chapter_key.replace("chapter ", ""))
+                page_num = int(page_key.replace("page ", ""))
                 docs.append({
-                    "เล่ม": book_num,
-                    "บท": chapter_num,
-                    "หน้า": page_num,
-                    "เนื้อหา": content
+                    "bookname": book_name,
+                    "chapter": chapter_num,
+                    "page": page_num,
+                    "content": content
                 })
     return docs
 
 def create_and_save_embeddings_and_metadata(docs):
     embeddings = []
     for doc in docs:
-        content = doc.get("เนื้อหา", "")
+        content = doc.get("content", "")
         if not content:
             continue
         emb = ollama.embeddings(model='nomic-embed-text', prompt=content)['embedding']
         embeddings.append(emb)
     embeddings = np.array(embeddings, dtype='float32')
+    log(f"กำลังสร้าง {EMB_PATH}")
     np.save(EMB_PATH, embeddings)
     with open(META_PATH, 'wb') as f:
         pickle.dump(docs, f)
 
 def load_embeddings_and_metadata():
+    log(f"โหลด {EMB_PATH} และ {META_PATH}")
     embeddings = np.load(EMB_PATH)
     with open(META_PATH, 'rb') as f:
         metadata = pickle.load(f)
     return embeddings, metadata
 
-def search(query, index, metadata, top_k=3):
+def search(query, index, metadata, top_k, max_distance):
+    log(f"กำลังค้นหาข้อมูลอ้างอิงสำหรับ: {query} ด้วย top_k={top_k} และ max_distance={max_distance}")
     q_emb = ollama.embeddings(model='nomic-embed-text', prompt=query)['embedding']
     q_emb = np.array([q_emb], dtype='float32')
     distances, ids = index.search(q_emb, top_k)
+    log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
     results = []
     for i, idx in enumerate(ids[0]):
         if idx < len(metadata):
-            results.append((metadata[idx], distances[0][i]))
+            dist = distances[0][i]
+            if max_distance is None or dist <= max_distance:
+                results.append((metadata[idx], dist))
+                log(f"เพิ่มผลลัพธ์: index={idx}, distance={dist:.4f}")
+            else:
+                log(f"ตัดผลลัพธ์: index={idx}, distance={dist:.4f} เพราะเกิน max_distance={max_distance}")
+    log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([doc for doc, _ in results])}")
     return results
 
 def short_references(metadata):
-    sorted_docs = sorted(metadata, key=lambda d: (d['เล่ม'], d['บท'], d['หน้า']))
-    return "\n".join([f"เล่ม {d['เล่ม']} > บท {d['บท']} > หน้า {d['หน้า']}" for d in sorted_docs])
+    sorted_docs = sorted(metadata, key=lambda d: (d['bookname'], d['chapter'], d['page']))
+    return ", ".join([
+        f"{d['bookname']} บท {d['chapter']} หน้า {d['page']}"
+        for d in sorted_docs
+    ])
 
 def check_rejection_message(text: str) -> bool:
     rejection_phrases = [
         "ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้ เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
-        "ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้...."
+        "ขออภัยครับ…ผมไม่สามารถตอบคำถามนี้ได้… เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
+        "ขออภัยครับ…ผมไม่สามารถตอบคำถามนี้ได้ เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
+        "ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้....",
+        "ผมไม่สามารถตอบคำถามนี้ได้",
+        "ไม่สามารถตอบคำถาม"
     ]
     return any(phrase in text for phrase in rejection_phrases)
 
-def ask(query, index, metadata, top_k=3):
-    start = time.perf_counter()
-    results = search(query, index, metadata, top_k=top_k)
-    if not results:
-        return {"rejected": False, "answer": "ไม่มีข้อมูล", "references": "", "duration": format_duration(time.perf_counter() - start)}
+def ask(query, index, metadata, top_k=None, max_distance=None):
+    top_k=len(query) if top_k is None else top_k
+    global start
+    results = search(query, index, metadata, top_k, max_distance=max_distance)
 
     contexts = [
-        f"เล่ม {doc['เล่ม']} บท {doc['บท']} หน้า {doc['หน้า']}:\n{doc['เนื้อหา']}"
+        f"{doc['content']}"
         for doc, _ in results
     ]
-    full_context = "\n\n---\n\n".join(contexts)
-    prompt = f"""ข้อมูลอ้างอิง:\n{full_context}\n\nคำถาม: {query}"""
+    full_context = "\n".join(contexts)
+    prompt = f"""ข้อมูลอ้างอิง:\n{full_context}\nคำถาม: {query}"""
+    model = 'gpt-oss:20b'
+    log(f"กำลังถามโมเดล: \"{model}\" ด้วย prompt:\n{prompt}")
+    start = time.perf_counter()
     response = ollama.chat(
-        model='gpt-oss:20b',
+        model=model,
         messages=[
             {"role": "system", "content": "คุณคือผู้ช่วยที่ใช้ข้อมูลอ้างอิงจากเอกสารหลายแหล่ง ซึ่งจะช่วยตอบคำถามเกี่ยวกับพระพทธรรมเท่านั้นถ้าได้รับคำถามนอกเหนือจากนี้ให้ตอบว่า ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้....เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น"},
             {"role": "user", "content": prompt}
@@ -123,12 +144,20 @@ def ask(query, index, metadata, top_k=3):
     answer = response['message']['content']
     ref_text = short_references([doc for doc, _ in results])
     end = time.perf_counter()
-    return {
-        "rejected": check_rejection_message(answer),
-        "answer": answer,
-        "references": ref_text,
-        "duration": format_duration(end - start)
-    }
+    processing_time = format_duration(end - start)
+    log(f"ถามโมเดล \"{model}\" เสร็จสิ้น ใช้เวลา {processing_time}")
+    if not check_rejection_message(answer):
+        return {
+            "answer": answer,
+            "references": ref_text,
+            "duration": processing_time
+        }
+    else:
+        return {
+            "answer": answer,
+            "references": "",
+            "duration": 0
+        }
     
 def init_bot():
     documents_raw = load_all_documents_pickle()
@@ -142,20 +171,51 @@ def init_bot():
     return index, metadata
 
 def ask_cli():
-    import json
-    if len(sys.argv[1].strip()) == 0:
+    log("เริ่มต้น BuddhamAI")
+    # ดึงคำถาม (argument แรกที่ไม่ใช่ flag)
+    message = None
+    top_k = None
+    max_distance = None
+
+    # วนอ่าน argv ตั้งแต่ sys.argv[1]
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == '-k' and i + 1 < len(args):
+            try:
+                top_k = int(args[i+1])
+            except ValueError:
+                top_k = None
+            i += 2
+        elif arg == '-d' and i + 1 < len(args):
+            try:
+                max_distance = float(args[i+1])
+            except ValueError:
+                max_distance = None
+            i += 2
+        elif not arg.startswith('-') and message is None:
+            message = arg
+            i += 1
+        else:
+            i += 1
+
+    if message is None or message.strip() == "":
         result = {"rejected": True, "answer": "กรุณาถามคำถาม", "references": "ไม่มี", "duration": 0}
         data = {"data": result}
-        json_str = json.dumps(data)
+        json_str = json.dumps(data, ensure_ascii=False)
         log(json_str)
         print(json_str)
         sys.exit(0)
-        
-    message = sys.argv[1]
+
+    # if top_k is None or top_k <= 0:
+    #     top_k = 3  # default
+
     index, metadata = init_bot()
-    result = ask(message, index, metadata)
+    result = ask(message, index, metadata, top_k=top_k, max_distance=max_distance)
+
     data = {"data": result}
-    json_str = json.dumps(data)
+    json_str = json.dumps(data, ensure_ascii=False)
     log(json_str)
     print(json_str)
     sys.exit(0)

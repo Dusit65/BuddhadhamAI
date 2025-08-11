@@ -2,6 +2,7 @@ import os
 import pickle
 import importlib.util
 import glob
+from debugger import log
 
 def clear_screen():
     if os.name == 'nt':  # Windows
@@ -23,31 +24,31 @@ DOCS_PKL_FOLDER = "./documents/documentsPkl"
 DOCUMENTS_ALL_PKL = os.path.join(DOCS_PKL_FOLDER, "documents_all.pkl")
 
 def delete_pkl_files():
-    # ลบไฟล์ .pkl เก่าในโฟลเดอร์ documentsPkl ยกเว้น documents_all.pkl
+    log("ลบไฟล์ .pkl เก่าในโฟลเดอร์ documentsPkl ยกเว้น documents_all.pkl")
     pkl_files = glob.glob(os.path.join(DOCS_PKL_FOLDER, "*.pkl"))
     for f in pkl_files:
         if os.path.basename(f) != os.path.basename(DOCUMENTS_ALL_PKL):
             os.remove(f)
-            # print(f"ลบไฟล์ .pkl เก่า: {f}")
+            log(f"ลบไฟล์ .pkl เก่า: {f}")
 
 def delete_old_files():
-    # ลบ embeddings.npy, metadata.pkl ในโฟลเดอร์โปรเจคหลัก
+    log("ลบ embeddings.npy, metadata.pkl ในโฟลเดอร์โปรเจคหลัก")
     for path in [EMB_PATH, META_PATH]:
         if os.path.exists(path):
             os.remove(path)
-            # print(f"ลบไฟล์เก่าออก: {path}")
+            log(f"ลบไฟล์เก่าออก: {path}")
 
 def delete_old_pkl_files():
     # ลบไฟล์ .pkl เก่าในโฟลเดอร์ documentsPkl ก่อนรัน
     pkl_files = glob.glob(os.path.join(DOCS_PKL_FOLDER, "*.pkl"))
     for f in pkl_files:
         os.remove(f)
-        # print(f"ลบไฟล์ .pkl เก่า: {f}")
+        log(f"ลบไฟล์ .pkl เก่า: {f}")
 
 def load_all_documents_from_py(folder_path=DOCS_PY_FOLDER, prefix=DOCS_PY_PREFIX):
     all_docs = {}
     files = sorted([f for f in os.listdir(folder_path) if f.startswith(prefix) and f.endswith(".py")])
-    # print(f"เจอไฟล์ .py ที่จะโหลด {len(files)} ไฟล์:", files)
+    log(f"เจอไฟล์ .py ที่จะโหลด {len(files)} ไฟล์:", files)
     for file in files:
         file_path = os.path.join(folder_path, file)
         module_name = file[:-3]  # ตัด .py ออก
@@ -57,29 +58,29 @@ def load_all_documents_from_py(folder_path=DOCS_PY_FOLDER, prefix=DOCS_PY_PREFIX
         data = getattr(module, "documents_raw", None)
         if data:
             all_docs.update(data)
-            # print(f"โหลดข้อมูลจาก {file} เรียบร้อย")
-        # else:
-        #     print(f"❌ ไฟล์ {file} ไม่มีตัวแปร documents_raw")
+            log(f"โหลดข้อมูลจาก {file} เรียบร้อย")
+        else:
+            log(f"ไฟล์ {file} ไม่มีตัวแปร documents_raw")
     return all_docs
 
 def save_documents_as_pkl(documents, output_path=DOCUMENTS_ALL_PKL):
     with open(output_path, "wb") as f:
         pickle.dump(documents, f)
-    # print(f"บันทึกเอกสารรวมเป็นไฟล์: {output_path}")
+    log(f"บันทึกเอกสารรวมเป็นไฟล์: {output_path}")
 
 def reDocuments():
-    # print("เริ่มต้นลบไฟล์ embeddings และ metadata เก่า...")
+    log("เริ่มต้นลบไฟล์ embeddings และ metadata เก่า...")
     delete_old_files()
 
-    # print("ลบไฟล์ .pkl เก่าในโฟลเดอร์ documentsPkl...")
+    log("ลบไฟล์ .pkl เก่าในโฟลเดอร์ documentsPkl...")
     delete_old_pkl_files()
 
-    # print("โหลดไฟล์เอกสาร .py หลายไฟล์และรวมกัน...")
+    log("โหลดไฟล์เอกสาร .py หลายไฟล์และรวมกัน...")
     documents_raw = load_all_documents_from_py()
 
-    # print("บันทึกเอกสารรวมเป็นไฟล์ .pkl ใหม่...")
+    log("บันทึกเอกสารรวมเป็นไฟล์ .pkl ใหม่...")
     save_documents_as_pkl(documents_raw)
     
     delete_pkl_files()
 
-    # print("เสร็จสิ้น! พร้อมรันโปรแกรมหลักสร้าง embeddings ใหม่ได้เลย")
+    log("เสร็จสิ้น! พร้อมรันโปรแกรมหลักสร้าง embeddings ใหม่ได้เลย")

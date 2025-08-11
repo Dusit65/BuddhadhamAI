@@ -1,9 +1,14 @@
+import datetime
+import os
+
 def format_duration(seconds: float) -> str:
     year = 365 * 24 * 3600
     month = 30 * 24 * 3600
     day = 24 * 3600
     hour = 3600
     minute = 60
+    millisecond = 1e-3
+    microsecond = 1e-6
 
     parts = []
 
@@ -27,13 +32,33 @@ def format_duration(seconds: float) -> str:
         mi = int(seconds // minute)
         seconds %= minute
         parts.append(f"{mi} นาที")
+    if seconds >= 1:
+        s = int(seconds)
+        seconds %= 1
+        parts.append(f"{s} วินาที")
+    if seconds >= millisecond:
+        ms = int(seconds // millisecond)
+        seconds %= millisecond
+        parts.append(f"{ms} มิลลิวินาที")
+    if seconds >= microsecond:
+        us = int(seconds // microsecond)
+        seconds %= microsecond
+        parts.append(f"{us} ไมโครวินาที")
 
-    parts.append(f"{seconds:.6f} วิ.")
+    return " ".join(parts) if parts else "0 ไมโครวินาที"
 
-    return " ".join(parts)
+def log(*args):
+    log_message = " ".join(str(a) for a in args)
+    log_file = "buddhamAI_cli.log"
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y")
+    new_entry = f"[{timestamp}] {log_message}"
 
-def log(log_message):
-    log_file = "ask_cli.log"
-    # timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if os.path.exists(log_file) and os.path.getsize(log_file) > 0:
+        with open(log_file, "rb+") as f:
+            f.seek(-1, os.SEEK_END)
+            last_char = f.read(1)
+            if last_char != b"\n":
+                new_entry = "\n" + new_entry
+
     with open(log_file, "a", encoding="utf-8") as f:
-        f.write(log_message)
+        f.write(new_entry)
