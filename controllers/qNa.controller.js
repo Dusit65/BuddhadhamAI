@@ -6,17 +6,20 @@ const path = require("path");
 // ถาม
 exports.ask = async (req, res) => {
   try {
-    const { question, chatId } = req.body;
+    const { chatId, question, k, d } = req.body;
 
     if (!question) {
       return res.status(400).json({ message: "Question is required." });
     }
 
     const pythonPath = "python"; // หรือ python3
-    // const scriptPath = "E:\\Work\\BuddhamAI_API\\testPython.py";
     const scriptPath = "./buddhamAI_cli.py";
+    const args = [scriptPath, question];
 
-    execFile(pythonPath, [scriptPath, question], async (error, stdout, stderr) => {
+    k != null && args.push("-k", k.toString());
+    d != null && args.push("-d", d.toString());
+
+    execFile(pythonPath, args, async (error, stdout, stderr) => {
       // if (error) {
       //   console.error("Python error:", error);
       //   return res.status(500).json({ message: "Python script error", error });
