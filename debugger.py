@@ -53,7 +53,8 @@ def log(*args):
     timestamp = datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y")
     new_entry = f"[{timestamp}] {log_message}"
 
-    if os.path.exists(log_file) and os.path.getsize(log_file) > 0:
+    # เช็คว่ามีเนื้อหาและลงท้ายด้วย \n หรือไม่
+    if os.path.getsize(log_file) > 0:
         with open(log_file, "rb+") as f:
             f.seek(-1, os.SEEK_END)
             last_char = f.read(1)
