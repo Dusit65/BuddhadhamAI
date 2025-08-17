@@ -14,7 +14,7 @@ from reDocuments import reDocuments
 from debugger import format_duration, log
 
 log_file = "buddhamAI_cli.log"
-required_models = ["gpt-oss:20b", "nomic-embed-text"]
+required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
 
 def clear_screen():
     if os.name == 'nt':  # Windows
