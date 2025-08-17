@@ -91,6 +91,8 @@ def search(query, index, metadata, top_k, max_distance):
     distances, ids = index.search(q_emb, top_k)
     log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
     results = []
+    filtered_out_results = []
+    filtered_out = []
     for i, idx in enumerate(ids[0]):
         if idx < len(metadata):
             dist = distances[0][i]
@@ -98,8 +100,11 @@ def search(query, index, metadata, top_k, max_distance):
                 results.append((metadata[idx], dist))
                 log(f"เพิ่มผลลัพธ์: index={idx}, distance={dist:.4f}")
             else:
+                filtered_out.append((metadata[idx], dist))
                 log(f"ตัดผลลัพธ์: index={idx}, distance={dist:.4f} เพราะเกิน max_distance={max_distance}")
     log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([doc for doc, _ in results])}")
+    if filtered_out:
+        log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out)} รายการ ได้แก่ {short_references([doc for doc, _ in filtered_out])}")
     return results
 
 def short_references(metadata):
