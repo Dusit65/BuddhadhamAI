@@ -140,7 +140,6 @@ def search(query, index, metadata, top_k, max_distance):
     log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
     results = []
     filtered_out_results = []
-    filtered_out = []
     for i, idx in enumerate(ids[0]):
         if idx < len(metadata):
             dist = distances[0][i]
@@ -148,11 +147,17 @@ def search(query, index, metadata, top_k, max_distance):
                 results.append((metadata[idx], dist))
                 log(f"เพิ่มผลลัพธ์: index={idx}, distance={dist:.4f}")
             else:
-                filtered_out.append((metadata[idx], dist))
+                filtered_out_results.append((metadata[idx], dist))
                 log(f"ตัดผลลัพธ์: index={idx}, distance={dist:.4f} เพราะเกิน max_distance={max_distance}")
     log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([doc for doc, _ in results])}")
-    if filtered_out:
-        log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out)} รายการ ได้แก่ {short_references([doc for doc, _ in filtered_out])}")
+    if filtered_out_results:
+        contexts = [
+            f"{doc['content']}"
+            for doc, _ in filtered_out_results
+        ]
+        full_context = "\n".join(contexts)
+        log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _ in filtered_out_results])}")
+        log(f"ข้อมูลอ้างอิงที่ถูกตัดออก:\n{full_context}")
     return results
 
 def short_references(metadata):
@@ -164,11 +169,6 @@ def short_references(metadata):
 
 def check_rejection_message(text: str) -> bool:
     rejection_phrases = [
-        "ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้ เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
-        "ขออภัยครับ…ผมไม่สามารถตอบคำถามนี้ได้… เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
-        "ขออภัยครับ…ผมไม่สามารถตอบคำถามนี้ได้ เนื่องจากผมถูกออกแบบมาเพื่อให้ตอบคำถามเกี่ยวกับพระพุทธธรรมเท่านั้น",
-        "ขออภัยครับ...ผมไม่สามารถตอบคำถามนี้ได้....",
-        "ผมไม่สามารถตอบคำถามนี้ได้",
         "ไม่สามารถตอบคำถาม"
     ]
     return any(phrase in text for phrase in rejection_phrases)
