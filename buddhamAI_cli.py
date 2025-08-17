@@ -3,51 +3,31 @@ import sys
 import os
 import pickle
 import json
-import numpy as np
-import faiss
-import ollama
 import time
 import subprocess
 import traceback
-import importlib.util
 from reDocuments import reDocuments
 from debugger import format_duration, log
+from get_required_packages import check_and_install_packages, required_packages
 
 try:
-
-    log_file = "buddhamAI_cli.log"
-    required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
-    required_packages = {
-    # pip package : module
-    "numpy": "numpy",
-    "ollama": "ollama",
-    "faiss-cpu": "faiss"   
-    }
-
     def clear_screen():
         if os.name == 'nt':  # Windows
             os.system('cls')
         else:  # Unix/Linux/Mac
             os.system('clear')
+    
+    log_file = "buddhamAI_cli.log"
+    required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
         
     if not os.path.exists(log_file):
         open(log_file, "w").close()
     with open(log_file, "r+") as f:
         f.truncate(0)
-
-    def check_and_install_packages(required_packages):
-        not_installed = []
-        log("กำลังตรวจสอบ packages ที่จำเป็น...")
-        for pip_name, module_name in required_packages.items():
-            if not importlib.util.find_spec(module_name):
-                log(f"{pip_name} ยังไม่ได้ติดตั้ง")
-                not_installed.append(pip_name)
-        if not_installed:
-            log("กำลังติดตั้ง:", ", ".join(not_installed))
-            subprocess.check_call([sys.executable, "-m", "pip", "install", *not_installed])
-            log("✅ ติดตั้ง Packages ครบทั้งหมดแล้ว")
-        else:
-            log("✅ มี Packages ครบแล้ว")
+        
+    modules = check_and_install_packages(required_packages)
+    for alias, module in modules.items():
+        globals()[alias] = module
 
     def get_installed_models():
         # ลองใช้ --json ก่อน
@@ -139,7 +119,7 @@ try:
             content = doc.get("content", "")
             if not content:
                 continue
-            emb = ollama.embeddings(model='nomic-embed-text', prompt=content)['embedding']
+            emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=content)['embedding']
             embeddings.append(emb)
         embeddings = np.array(embeddings, dtype='float32')
         log(f"กำลังสร้าง {EMB_PATH}")
@@ -148,6 +128,7 @@ try:
             pickle.dump(docs, f)
 
     def load_embeddings_and_metadata():
+        log(f"ใช้ embeddings {required_models[1]}")
         log(f"โหลด {EMB_PATH} และ {META_PATH}")
         embeddings = np.load(EMB_PATH)
         with open(META_PATH, 'rb') as f:
@@ -156,7 +137,7 @@ try:
 
     def search(query, index, metadata, top_k, max_distance):
         log(f"กำลังค้นหาข้อมูลอ้างอิงสำหรับ: {query} ด้วย top_k={top_k} และ max_distance={max_distance}")
-        q_emb = ollama.embeddings(model='nomic-embed-text', prompt=query)['embedding']
+        q_emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']
         q_emb = np.array([q_emb], dtype='float32')
         distances, ids = index.search(q_emb, top_k)
         log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
@@ -247,7 +228,6 @@ try:
 
     def ask_cli():
         log("เริ่มต้น BuddhamAI")
-        check_and_install_packages(required_packages)
         check_and_pull_models(required_models)
         # ดึงคำถาม (argument แรกที่ไม่ใช่ flag)
         message = None
