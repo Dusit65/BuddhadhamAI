@@ -7,26 +7,74 @@ import numpy as np
 import faiss
 import ollama
 import time
+import subprocess
 import traceback
 import datetime
 from reDocuments import reDocuments
 from debugger import format_duration, log
+
+log_file = "buddhamAI_cli.log"
+required_models = ["gpt-oss:20b", "nomic-embed-text"]
 
 def clear_screen():
     if os.name == 'nt':  # Windows
         os.system('cls')
     else:  # Unix/Linux/Mac
         os.system('clear')
-
-with open("buddhamAI_cli.log", "r+") as f:
+        
+if not os.path.exists(log_file):
+        open(log_file, "w").close()
+with open(log_file, "r+") as f:
     f.truncate(0)
+
+def get_installed_models():
+    # ลองใช้ --json ก่อน
+    try:
+        result = subprocess.run(
+            ["ollama", "list", "--json"],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0 and result.stdout.strip().startswith("["):
+            return [m["name"] for m in json.loads(result.stdout)]
+    except Exception:
+        pass  # ถ้าพัง ให้ไปใช้วิธี parse ธรรมดา
+
+    # ใช้วิธีอ่านแบบข้อความปกติ
+    result = subprocess.run(
+        ["ollama", "list"],
+        capture_output=True,
+        text=True
+    )
+    lines = result.stdout.strip().split("\n")
+    models = []
+    for line in lines[1:]:  # ข้าม header
+        parts = line.split()
+        if parts:
+            models.append(parts[0])
+    return models
+
+def check_and_pull_models(models_to_check):
+    try:
+        local_model_names = get_installed_models()
+        missing_models = [m for m in models_to_check if m not in local_model_names]
+
+        if missing_models:
+            for model in missing_models:
+                log(f"📥 กำลังโหลดโมเดล {model} ...")
+                subprocess.run(["ollama", "pull", model], check=True)
+                log(f"✅ โหลด {model} เสร็จแล้ว")
+        else:
+            log("✅ มีโมเดลครบแล้ว")
+    except Exception:
+        log("❌ เกิดข้อผิดพลาด:\n" + traceback.format_exc())
+        exit(1)
 
 EMB_PATH = "embeddings.npy"
 META_PATH = "metadata.pkl"
 DOCS_ALL_PATH = "documents/documentsPkl/documents_all.pkl"
 start = None
 end = None
-
 
 def load_all_documents_pickle(path=DOCS_ALL_PATH):
     if not os.path.isfile(path):
@@ -177,6 +225,7 @@ def init_bot():
 
 def ask_cli():
     log("เริ่มต้น BuddhamAI")
+    check_and_pull_models(required_models)
     # ดึงคำถาม (argument แรกที่ไม่ใช่ flag)
     message = None
     top_k = None
