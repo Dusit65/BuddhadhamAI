@@ -9,7 +9,6 @@ import ollama
 import time
 import subprocess
 import traceback
-import datetime
 import importlib.util
 from reDocuments import reDocuments
 from debugger import format_duration, log
@@ -18,7 +17,12 @@ try:
 
     log_file = "buddhamAI_cli.log"
     required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
-    required_packages = ["numpy", "ollama", "faiss-cpu"]
+    required_packages = {
+    # pip package : module
+    "numpy": "numpy",
+    "ollama": "ollama",
+    "faiss-cpu": "faiss"   
+    }
 
     def clear_screen():
         if os.name == 'nt':  # Windows
@@ -31,22 +35,19 @@ try:
     with open(log_file, "r+") as f:
         f.truncate(0)
 
-    def check_and_install(required_packages):
+    def check_and_install_packages(required_packages):
         not_installed = []
-
-        for pkg in required_packages:
-            if importlib.util.find_spec(pkg):
-                print(f"{pkg} ติดตั้งแล้ว")
-            else:
-                print(f"{pkg} ยังไม่ได้ติดตั้ง")
-                not_installed.append(pkg)
-
+        log("กำลังตรวจสอบ packages ที่จำเป็น...")
+        for pip_name, module_name in required_packages.items():
+            if not importlib.util.find_spec(module_name):
+                log(f"{pip_name} ยังไม่ได้ติดตั้ง")
+                not_installed.append(pip_name)
         if not_installed:
-            print("\nกำลังติดตั้ง:", ", ".join(not_installed))
+            log("กำลังติดตั้ง:", ", ".join(not_installed))
             subprocess.check_call([sys.executable, "-m", "pip", "install", *not_installed])
-            print("Packages ครบทั้งหมดแล้ว")
+            log("✅ ติดตั้ง Packages ครบทั้งหมดแล้ว")
         else:
-            print("\nPackages ครบทั้งหมดแล้ว")
+            log("✅ มี Packages ครบแล้ว")
 
     def get_installed_models():
         # ลองใช้ --json ก่อน
@@ -86,7 +87,7 @@ try:
                     subprocess.run(["ollama", "pull", model], check=True)
                     log(f"✅ โหลด {model} เสร็จแล้ว")
             else:
-                log("✅ มีโมเดลครบแล้ว")
+                log("✅ มี Models ครบแล้ว")
         except Exception:
             log("❌ เกิดข้อผิดพลาด:\n" + traceback.format_exc())
             exit(1)
@@ -246,6 +247,7 @@ try:
 
     def ask_cli():
         log("เริ่มต้น BuddhamAI")
+        check_and_install_packages(required_packages)
         check_and_pull_models(required_models)
         # ดึงคำถาม (argument แรกที่ไม่ใช่ flag)
         message = None
