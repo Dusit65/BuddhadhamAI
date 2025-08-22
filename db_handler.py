@@ -35,14 +35,13 @@ def fetch_documents():
             "bookname": r.bookName,
             "chapter": r.chapterId,
             "chapterName": r.chapterName,
-            "page": 1,  # ถ้าไม่ใช้ page จริง ๆ ให้ fix 1
             "content": r.chapterText
         })
     log(f"โหลดเอกสารจาก DB {len(docs)} รายการ")
     return docs
 
 def get_last_update_time():
-    """ดึงเวลาล่าสุดของ book_tb และ chapter_tb"""
+    log("ดึงเวลาล่าสุดของ book_tb และ chapter_tb")
     engine = get_engine()
     with engine.connect() as conn:
         # ต้องมี field updatedAt ใน DB ถึงจะทำงานได้

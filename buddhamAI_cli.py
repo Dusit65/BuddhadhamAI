@@ -9,6 +9,7 @@ import traceback
 import numpy as np
 import faiss
 import ollama
+import hashlib
 from reDocuments import reDocuments, create_and_save_embeddings_and_metadata, save_last_embed_time
 from debugger import format_duration, log
 from db_handler import fetch_documents, get_last_update_time
@@ -120,30 +121,41 @@ try:
 
     def search(query, index, metadata, top_k, max_distance):
         log(f"กำลังค้นหาข้อมูลอ้างอิงสำหรับ: {query} ด้วย top_k={top_k} และ max_distance={max_distance}")
+
         q_emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']
         q_emb = np.array([q_emb], dtype='float32')
+
         distances, ids = index.search(q_emb, top_k)
         log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
+
         results = []
         filtered_out_results = []
+        seen_docs = set()
+
         for i, idx in enumerate(ids[0]):
-            if idx < len(metadata):
-                dist = distances[0][i]
-                if max_distance is None or dist <= max_distance:
-                    results.append((metadata[idx], dist))
-                    log(f"เพิ่มผลลัพธ์: index={idx}, distance={dist:.4f}")
-                else:
-                    filtered_out_results.append((metadata[idx], dist))
-                    log(f"ตัดผลลัพธ์: index={idx}, distance={dist:.4f} เพราะเกิน max_distance={max_distance}")
+            if idx >= len(metadata):
+                continue
+            dist = distances[0][i]
+            doc = metadata[idx]
+
+            # สร้าง hash จาก content
+            doc_hash = hashlib.md5(doc['content'].encode('utf-8')).hexdigest()
+
+            # ถ้าซ้ำหรือเกิน max_distance
+            if doc_hash in seen_docs or (max_distance is not None and dist > max_distance):
+                filtered_out_results.append((doc, dist))
+                continue
+
+            results.append((doc, dist))
+            seen_docs.add(doc_hash)
+
         log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([doc for doc, _ in results])}")
         if filtered_out_results:
-            contexts = [
-                f"{doc['content']}"
-                for doc, _ in filtered_out_results
-            ]
+            contexts = [f"{doc['content']}" for doc, _ in filtered_out_results]
             full_context = "\n".join(contexts)
             log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _ in filtered_out_results])}")
             log(f"ข้อมูลอ้างอิงที่ถูกตัดออก:\n{full_context}")
+
         return results
 
     def short_references(metadata):
@@ -205,13 +217,13 @@ try:
             return json.load(f)["last_embed_time"]
 
     def init_bot():
-        # เช็คเวลาอัพเดต
+        log("เช็คอัพเดตข้อมูล")
         db_last_update = get_last_update_time()
         embed_last_update = read_last_embed_time()
 
         # ถ้า DB ใหม่กว่า embeddings → regenerate
         if db_last_update > embed_last_update or not (os.path.exists(EMB_PATH) and os.path.exists(META_PATH)):
-            log("DB ใหม่กว่า embeddings → regenerate...")
+            log("มีการอัพเดตข้อมูล กำลังอัพเดตข้อมูล")
             documents = fetch_documents()
             create_and_save_embeddings_and_metadata(documents)
             save_last_embed_time(db_last_update)

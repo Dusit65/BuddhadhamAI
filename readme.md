@@ -4,6 +4,8 @@ sqlcmd -S <ServerIP> -U <Username> -P <Password>
 npx prisma migrate reset --force
 npx prisma migrate dev --name init
 
+git rm --cached config.json
+
 python buddhamAI_cli.py ""
 
 pip install faiss-cpu
