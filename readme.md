@@ -1,5 +1,16 @@
-DATABASE_URL = "sqlserver://localhost:1433;initial catalog=DBNAME;user=ROOT;password=PASSW0RD;trustServerCertificate=true;charset=utf8mb4"
-conn_str = "mssql+pyodbc://username:passw0rd@localhost:1234/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+.env
+```
+PORT = 0000
+DATABASE_URL = "sqlserver://127.0.0.1:0000;initial catalog=DBName;user=Username;password=passw0rd;trustServerCertificate=true;charset=utf8mb4"
+conn_str= "mssql+pyodbc://Username:passw0rd@127.0.0.1:0000/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+DB_SERVER = "127.0.0.1"
+DB_PORT = "0000"
+DB_USER = "Username"
+DB_PASSWORD = "passw0rd"
+DB_NAME = "DBName"
+DB_DRIVER = "ODBC Driver 18 for SQL Server"
+```
+
 sqlcmd -S <ServerIP> -U <Username> -P <Password>
 npx prisma migrate reset --force
 npx prisma migrate dev --name init
@@ -13,6 +24,4 @@ pip install numpy
 pip install ollama
 
 #note
-- เช็ค Update และทำไฟล์ใหม่
 - embed_tb
-- รวมไฟล์ config

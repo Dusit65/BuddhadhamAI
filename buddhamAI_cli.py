@@ -159,9 +159,9 @@ try:
         return results
 
     def short_references(metadata):
-        sorted_docs = sorted(metadata, key=lambda d: (d['bookname'], d['chapter']))
+        sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapter']))
         return ", ".join([
-            f"{d['bookname']} บท {d['chapter']}"
+            f"{d['bookName']} บท {d['chapter']}"
             for d in sorted_docs
         ])
 

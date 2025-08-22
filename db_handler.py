@@ -1,20 +1,16 @@
-import json
 import os
 from sqlalchemy import create_engine, text
 from debugger import log
+from dotenv import load_dotenv
 
-CONFIG_FILE = "config.json"
-
-def load_config():
-    if not os.path.exists(CONFIG_FILE):
-        raise FileNotFoundError(f"ไม่พบไฟล์ {CONFIG_FILE}")
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+# โหลด .env
+load_dotenv()  # จะอ่านไฟล์ .env ใน directory เดียวกับ script
 
 def get_engine():
-    with open("config.json", "r", encoding="utf-8") as f:
-        cfg = json.load(f)
-    conn_str = cfg["database"]["conn_str"]
+    # อ่านค่าจาก env
+    conn_str = os.getenv("conn_str")
+    if not conn_str:
+        raise ValueError("conn_str ไม่ถูกตั้งค่าใน .env")
     return create_engine(conn_str, pool_pre_ping=True)
 
 def fetch_documents():
@@ -32,7 +28,7 @@ def fetch_documents():
     for r in rows:
         docs.append({
             "bookId": r.bookId,
-            "bookname": r.bookName,
+            "bookName": r.bookName,
             "chapter": r.chapterId,
             "chapterName": r.chapterName,
             "content": r.chapterText
@@ -44,7 +40,6 @@ def get_last_update_time():
     log("ดึงเวลาล่าสุดของ book_tb และ chapter_tb")
     engine = get_engine()
     with engine.connect() as conn:
-        # ต้องมี field updatedAt ใน DB ถึงจะทำงานได้
         q1 = conn.execute(text("SELECT MAX(updatedAt) as last_update FROM book_tb")).scalar()
         q2 = conn.execute(text("SELECT MAX(updatedAt) as last_update FROM chapter_tb")).scalar()
 
