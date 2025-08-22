@@ -3,10 +3,10 @@
     "provider": "sqlserver",
     "server": "localhost",
     "port": 1234,
-    "user": "username",
+    "user": "Username",
     "password": "passw0rd",
     "database": "DBName",
     "driver": "ODBC Driver 18 for SQL Server",
-    "conn_str": "mssql+pyodbc://username:passw0rd@localhost:1234/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+    "conn_str": "mssql+pyodbc://Username:passw0rd@localhost:1234/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
   }
 }

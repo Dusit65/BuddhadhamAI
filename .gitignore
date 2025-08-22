@@ -7,3 +7,4 @@ __pycache__
 documents/documentsPython/__pycache__
 ask_cli.log
 buddhamAI_cli.log
+config.json
