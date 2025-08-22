@@ -1,4 +1,7 @@
+#db_handler.py
 import os
+import pickle
+import numpy as np
 from sqlalchemy import create_engine, text
 from debugger import log
 from dotenv import load_dotenv
@@ -45,3 +48,28 @@ def get_last_update_time():
 
     last_update = max(q1 or "1970-01-01", q2 or "1970-01-01")
     return str(last_update)
+
+def save_embeddings_to_db(embeddings, docs):
+    """บันทึก embeddings และ metadata ลง DB"""
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM embeddings_tb"))  # เก็บล่าสุดแค่ชุดเดียว
+        conn.execute(
+            text("INSERT INTO embeddings_tb (embeddings, metadata) VALUES (:emb, :meta)"),
+            {
+                "emb": embeddings.tobytes(),
+                "meta": pickle.dumps(docs)
+            }
+        )
+    log("บันทึก embeddings/metadata ลง DB แล้ว")
+
+def load_embeddings_from_db():
+    """โหลด embeddings และ metadata จาก DB"""
+    engine = get_engine()
+    with engine.connect() as conn:
+        row = conn.execute(text("SELECT TOP 1 embeddings, metadata FROM embeddings_tb ORDER BY id DESC")).first()
+        if not row:
+            return None, None
+        embeddings = np.frombuffer(row.embeddings, dtype="float32").reshape(-1, len(pickle.loads(row.metadata)[0].get("content", "")))
+        docs = pickle.loads(row.metadata)
+        return embeddings, docs

@@ -1,4 +1,4 @@
-# buddhamAI_cli
+# buddhamAI_cli.py
 import sys
 import os
 import pickle
@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 import ollama
 import hashlib
-from reDocuments import reDocuments, create_and_save_embeddings_and_metadata, save_last_embed_time
+from reDocuments import create_and_save_embeddings_and_metadata, save_last_embed_time, ensure_embeddings_up_to_date
 from debugger import format_duration, log
 from db_handler import fetch_documents, get_last_update_time
 
@@ -77,26 +77,6 @@ try:
         except Exception:
             log("❌ เกิดข้อผิดพลาด:\n" + traceback.format_exc())
             exit(1)
-
-    def load_all_documents_pickle(path=DOCS_ALL_PATH):
-        if not os.path.isfile(path):
-            log(f"ไม่พบไฟล์ {path} รัน reDocuments() แทน")
-            reDocuments()
-            import time
-            time.sleep(2)  # รอไฟล์ถูกเขียนและระบบไฟล์อัปเดต
-        try:
-            with open(path, "rb") as f:
-                docs = pickle.load(f)
-            log(f"โหลดเอกสารทั้งหมดจาก {path} จำนวน {len(docs)} รายการ")
-            return docs
-        except Exception as e:
-            log(f"เกิดข้อผิดพลาดขณะโหลดไฟล์ {path}: {e}")
-            log("กำลัง reDocuments()")
-            reDocuments()
-            time.sleep(2)
-            with open(path, "rb") as f:
-                docs = pickle.load(f)
-            return docs
 
     def flatten_docs(raw):
         docs = []
@@ -218,17 +198,7 @@ try:
 
     def init_bot():
         log("เช็คอัพเดตข้อมูล")
-        db_last_update = get_last_update_time()
-        embed_last_update = read_last_embed_time()
-
-        # ถ้า DB ใหม่กว่า embeddings → regenerate
-        if db_last_update > embed_last_update or not (os.path.exists(EMB_PATH) and os.path.exists(META_PATH)):
-            log("มีการอัพเดตข้อมูล กำลังอัพเดตข้อมูล")
-            documents = fetch_documents()
-            create_and_save_embeddings_and_metadata(documents)
-            save_last_embed_time(db_last_update)
-
-        embeddings, metadata = load_embeddings_and_metadata()
+        embeddings, metadata = ensure_embeddings_up_to_date()
         dimension = embeddings.shape[1]
         index = faiss.IndexFlatL2(dimension)
         index.add(embeddings)

@@ -157,6 +157,14 @@ exports.Prisma.Chapter_tbScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.Embeddings_tbScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  embeddings: 'embeddings',
+  metadata: 'metadata'
+};
+
 exports.Prisma.Log_tbScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -175,6 +183,7 @@ exports.Prisma.ModelName = {
   qNa_tb: 'qNa_tb',
   book_tb: 'book_tb',
   chapter_tb: 'chapter_tb',
+  embeddings_tb: 'embeddings_tb',
   log_tb: 'log_tb'
 };
 

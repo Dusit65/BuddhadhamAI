@@ -39,6 +39,11 @@ export type book_tb = $Result.DefaultSelection<Prisma.$book_tbPayload>
  */
 export type chapter_tb = $Result.DefaultSelection<Prisma.$chapter_tbPayload>
 /**
+ * Model embeddings_tb
+ * 
+ */
+export type embeddings_tb = $Result.DefaultSelection<Prisma.$embeddings_tbPayload>
+/**
  * Model log_tb
  * 
  */
@@ -218,6 +223,16 @@ export class PrismaClient<
     * ```
     */
   get chapter_tb(): Prisma.chapter_tbDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.embeddings_tb`: Exposes CRUD operations for the **embeddings_tb** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Embeddings_tbs
+    * const embeddings_tbs = await prisma.embeddings_tb.findMany()
+    * ```
+    */
+  get embeddings_tb(): Prisma.embeddings_tbDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.log_tb`: Exposes CRUD operations for the **log_tb** model.
@@ -673,6 +688,7 @@ export namespace Prisma {
     qNa_tb: 'qNa_tb',
     book_tb: 'book_tb',
     chapter_tb: 'chapter_tb',
+    embeddings_tb: 'embeddings_tb',
     log_tb: 'log_tb'
   };
 
@@ -692,7 +708,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user_tb" | "chat_tb" | "qNa_tb" | "book_tb" | "chapter_tb" | "log_tb"
+      modelProps: "user_tb" | "chat_tb" | "qNa_tb" | "book_tb" | "chapter_tb" | "embeddings_tb" | "log_tb"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1026,6 +1042,72 @@ export namespace Prisma {
           }
         }
       }
+      embeddings_tb: {
+        payload: Prisma.$embeddings_tbPayload<ExtArgs>
+        fields: Prisma.embeddings_tbFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.embeddings_tbFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.embeddings_tbFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          findFirst: {
+            args: Prisma.embeddings_tbFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.embeddings_tbFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          findMany: {
+            args: Prisma.embeddings_tbFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>[]
+          }
+          create: {
+            args: Prisma.embeddings_tbCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          createMany: {
+            args: Prisma.embeddings_tbCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.embeddings_tbDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          update: {
+            args: Prisma.embeddings_tbUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          deleteMany: {
+            args: Prisma.embeddings_tbDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.embeddings_tbUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.embeddings_tbUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$embeddings_tbPayload>
+          }
+          aggregate: {
+            args: Prisma.Embeddings_tbAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEmbeddings_tb>
+          }
+          groupBy: {
+            args: Prisma.embeddings_tbGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Embeddings_tbGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.embeddings_tbCountArgs<ExtArgs>
+            result: $Utils.Optional<Embeddings_tbCountAggregateOutputType> | number
+          }
+        }
+      }
       log_tb: {
         payload: Prisma.$log_tbPayload<ExtArgs>
         fields: Prisma.log_tbFieldRefs
@@ -1181,6 +1263,7 @@ export namespace Prisma {
     qNa_tb?: qNa_tbOmit
     book_tb?: book_tbOmit
     chapter_tb?: chapter_tbOmit
+    embeddings_tb?: embeddings_tbOmit
     log_tb?: log_tbOmit
   }
 
@@ -1385,11 +1468,11 @@ export namespace Prisma {
   }
 
   export type User_tbSumAggregateOutputType = {
-    userId: number | null
+    userId: bigint | null
   }
 
   export type User_tbMinAggregateOutputType = {
-    userId: number | null
+    userId: bigint | null
     userName: string | null
     userEmail: string | null
     userPassword: string | null
@@ -1397,7 +1480,7 @@ export namespace Prisma {
   }
 
   export type User_tbMaxAggregateOutputType = {
-    userId: number | null
+    userId: bigint | null
     userName: string | null
     userEmail: string | null
     userPassword: string | null
@@ -1534,7 +1617,7 @@ export namespace Prisma {
   }
 
   export type User_tbGroupByOutputType = {
-    userId: number
+    userId: bigint
     userName: string
     userEmail: string
     userPassword: string
@@ -1592,7 +1675,7 @@ export namespace Prisma {
       chats: Prisma.$chat_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      userId: number
+      userId: bigint
       userName: string
       userEmail: string
       userPassword: string
@@ -1967,7 +2050,7 @@ export namespace Prisma {
    * Fields of the user_tb model
    */ 
   interface user_tbFieldRefs {
-    readonly userId: FieldRef<"user_tb", 'Int'>
+    readonly userId: FieldRef<"user_tb", 'BigInt'>
     readonly userName: FieldRef<"user_tb", 'String'>
     readonly userEmail: FieldRef<"user_tb", 'String'>
     readonly userPassword: FieldRef<"user_tb", 'String'>
@@ -2374,20 +2457,20 @@ export namespace Prisma {
   }
 
   export type Chat_tbSumAggregateOutputType = {
-    chatId: number | null
-    userId: number | null
+    chatId: bigint | null
+    userId: bigint | null
   }
 
   export type Chat_tbMinAggregateOutputType = {
-    chatId: number | null
-    userId: number | null
+    chatId: bigint | null
+    userId: bigint | null
     chatHeader: string | null
     createAt: Date | null
   }
 
   export type Chat_tbMaxAggregateOutputType = {
-    chatId: number | null
-    userId: number | null
+    chatId: bigint | null
+    userId: bigint | null
     chatHeader: string | null
     createAt: Date | null
   }
@@ -2520,8 +2603,8 @@ export namespace Prisma {
   }
 
   export type Chat_tbGroupByOutputType = {
-    chatId: number
-    userId: number
+    chatId: bigint
+    userId: bigint
     chatHeader: string
     createAt: Date
     _count: Chat_tbCountAggregateOutputType | null
@@ -2578,8 +2661,8 @@ export namespace Prisma {
       qnas: Prisma.$qNa_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      chatId: number
-      userId: number
+      chatId: bigint
+      userId: bigint
       chatHeader: string
       createAt: Date
     }, ExtArgs["result"]["chat_tb"]>
@@ -2953,8 +3036,8 @@ export namespace Prisma {
    * Fields of the chat_tb model
    */ 
   interface chat_tbFieldRefs {
-    readonly chatId: FieldRef<"chat_tb", 'Int'>
-    readonly userId: FieldRef<"chat_tb", 'Int'>
+    readonly chatId: FieldRef<"chat_tb", 'BigInt'>
+    readonly userId: FieldRef<"chat_tb", 'BigInt'>
     readonly chatHeader: FieldRef<"chat_tb", 'String'>
     readonly createAt: FieldRef<"chat_tb", 'DateTime'>
   }
@@ -3359,21 +3442,21 @@ export namespace Prisma {
   }
 
   export type QNa_tbSumAggregateOutputType = {
-    qNaId: number | null
-    chatId: number | null
+    qNaId: bigint | null
+    chatId: bigint | null
   }
 
   export type QNa_tbMinAggregateOutputType = {
-    qNaId: number | null
-    chatId: number | null
+    qNaId: bigint | null
+    chatId: bigint | null
     qNaWords: string | null
     qNaType: string | null
     createdAt: Date | null
   }
 
   export type QNa_tbMaxAggregateOutputType = {
-    qNaId: number | null
-    chatId: number | null
+    qNaId: bigint | null
+    chatId: bigint | null
     qNaWords: string | null
     qNaType: string | null
     createdAt: Date | null
@@ -3511,8 +3594,8 @@ export namespace Prisma {
   }
 
   export type QNa_tbGroupByOutputType = {
-    qNaId: number
-    chatId: number
+    qNaId: bigint
+    chatId: bigint
     qNaWords: string
     qNaType: string
     createdAt: Date
@@ -3567,8 +3650,8 @@ export namespace Prisma {
       chat: Prisma.$chat_tbPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      qNaId: number
-      chatId: number
+      qNaId: bigint
+      chatId: bigint
       qNaWords: string
       qNaType: string
       createdAt: Date
@@ -3942,8 +4025,8 @@ export namespace Prisma {
    * Fields of the qNa_tb model
    */ 
   interface qNa_tbFieldRefs {
-    readonly qNaId: FieldRef<"qNa_tb", 'Int'>
-    readonly chatId: FieldRef<"qNa_tb", 'Int'>
+    readonly qNaId: FieldRef<"qNa_tb", 'BigInt'>
+    readonly chatId: FieldRef<"qNa_tb", 'BigInt'>
     readonly qNaWords: FieldRef<"qNa_tb", 'String'>
     readonly qNaType: FieldRef<"qNa_tb", 'String'>
     readonly createdAt: FieldRef<"qNa_tb", 'DateTime'>
@@ -4324,18 +4407,18 @@ export namespace Prisma {
   }
 
   export type Book_tbSumAggregateOutputType = {
-    bookId: number | null
+    bookId: bigint | null
   }
 
   export type Book_tbMinAggregateOutputType = {
-    bookId: number | null
+    bookId: bigint | null
     bookName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type Book_tbMaxAggregateOutputType = {
-    bookId: number | null
+    bookId: bigint | null
     bookName: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4467,7 +4550,7 @@ export namespace Prisma {
   }
 
   export type Book_tbGroupByOutputType = {
-    bookId: number
+    bookId: bigint
     bookName: string
     createdAt: Date
     updatedAt: Date
@@ -4522,7 +4605,7 @@ export namespace Prisma {
       chapters: Prisma.$chapter_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      bookId: number
+      bookId: bigint
       bookName: string
       createdAt: Date
       updatedAt: Date
@@ -4896,7 +4979,7 @@ export namespace Prisma {
    * Fields of the book_tb model
    */ 
   interface book_tbFieldRefs {
-    readonly bookId: FieldRef<"book_tb", 'Int'>
+    readonly bookId: FieldRef<"book_tb", 'BigInt'>
     readonly bookName: FieldRef<"book_tb", 'String'>
     readonly createdAt: FieldRef<"book_tb", 'DateTime'>
     readonly updatedAt: FieldRef<"book_tb", 'DateTime'>
@@ -5302,13 +5385,13 @@ export namespace Prisma {
   }
 
   export type Chapter_tbSumAggregateOutputType = {
-    chapterId: number | null
-    bookId: number | null
+    chapterId: bigint | null
+    bookId: bigint | null
   }
 
   export type Chapter_tbMinAggregateOutputType = {
-    chapterId: number | null
-    bookId: number | null
+    chapterId: bigint | null
+    bookId: bigint | null
     chapterName: string | null
     chapterText: string | null
     createdAt: Date | null
@@ -5316,8 +5399,8 @@ export namespace Prisma {
   }
 
   export type Chapter_tbMaxAggregateOutputType = {
-    chapterId: number | null
-    bookId: number | null
+    chapterId: bigint | null
+    bookId: bigint | null
     chapterName: string | null
     chapterText: string | null
     createdAt: Date | null
@@ -5460,8 +5543,8 @@ export namespace Prisma {
   }
 
   export type Chapter_tbGroupByOutputType = {
-    chapterId: number
-    bookId: number
+    chapterId: bigint
+    bookId: bigint
     chapterName: string
     chapterText: string
     createdAt: Date
@@ -5519,8 +5602,8 @@ export namespace Prisma {
       book: Prisma.$book_tbPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      chapterId: number
-      bookId: number
+      chapterId: bigint
+      bookId: bigint
       chapterName: string
       chapterText: string
       createdAt: Date
@@ -5895,8 +5978,8 @@ export namespace Prisma {
    * Fields of the chapter_tb model
    */ 
   interface chapter_tbFieldRefs {
-    readonly chapterId: FieldRef<"chapter_tb", 'Int'>
-    readonly bookId: FieldRef<"chapter_tb", 'Int'>
+    readonly chapterId: FieldRef<"chapter_tb", 'BigInt'>
+    readonly bookId: FieldRef<"chapter_tb", 'BigInt'>
     readonly chapterName: FieldRef<"chapter_tb", 'String'>
     readonly chapterText: FieldRef<"chapter_tb", 'String'>
     readonly createdAt: FieldRef<"chapter_tb", 'DateTime'>
@@ -6262,6 +6345,921 @@ export namespace Prisma {
 
 
   /**
+   * Model embeddings_tb
+   */
+
+  export type AggregateEmbeddings_tb = {
+    _count: Embeddings_tbCountAggregateOutputType | null
+    _avg: Embeddings_tbAvgAggregateOutputType | null
+    _sum: Embeddings_tbSumAggregateOutputType | null
+    _min: Embeddings_tbMinAggregateOutputType | null
+    _max: Embeddings_tbMaxAggregateOutputType | null
+  }
+
+  export type Embeddings_tbAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type Embeddings_tbSumAggregateOutputType = {
+    id: bigint | null
+  }
+
+  export type Embeddings_tbMinAggregateOutputType = {
+    id: bigint | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    embeddings: Uint8Array | null
+    metadata: Uint8Array | null
+  }
+
+  export type Embeddings_tbMaxAggregateOutputType = {
+    id: bigint | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    embeddings: Uint8Array | null
+    metadata: Uint8Array | null
+  }
+
+  export type Embeddings_tbCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    embeddings: number
+    metadata: number
+    _all: number
+  }
+
+
+  export type Embeddings_tbAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type Embeddings_tbSumAggregateInputType = {
+    id?: true
+  }
+
+  export type Embeddings_tbMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    embeddings?: true
+    metadata?: true
+  }
+
+  export type Embeddings_tbMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    embeddings?: true
+    metadata?: true
+  }
+
+  export type Embeddings_tbCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    embeddings?: true
+    metadata?: true
+    _all?: true
+  }
+
+  export type Embeddings_tbAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which embeddings_tb to aggregate.
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of embeddings_tbs to fetch.
+     */
+    orderBy?: embeddings_tbOrderByWithRelationInput | embeddings_tbOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: embeddings_tbWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` embeddings_tbs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` embeddings_tbs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned embeddings_tbs
+    **/
+    _count?: true | Embeddings_tbCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Embeddings_tbAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Embeddings_tbSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Embeddings_tbMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Embeddings_tbMaxAggregateInputType
+  }
+
+  export type GetEmbeddings_tbAggregateType<T extends Embeddings_tbAggregateArgs> = {
+        [P in keyof T & keyof AggregateEmbeddings_tb]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEmbeddings_tb[P]>
+      : GetScalarType<T[P], AggregateEmbeddings_tb[P]>
+  }
+
+
+
+
+  export type embeddings_tbGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: embeddings_tbWhereInput
+    orderBy?: embeddings_tbOrderByWithAggregationInput | embeddings_tbOrderByWithAggregationInput[]
+    by: Embeddings_tbScalarFieldEnum[] | Embeddings_tbScalarFieldEnum
+    having?: embeddings_tbScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Embeddings_tbCountAggregateInputType | true
+    _avg?: Embeddings_tbAvgAggregateInputType
+    _sum?: Embeddings_tbSumAggregateInputType
+    _min?: Embeddings_tbMinAggregateInputType
+    _max?: Embeddings_tbMaxAggregateInputType
+  }
+
+  export type Embeddings_tbGroupByOutputType = {
+    id: bigint
+    createdAt: Date
+    updatedAt: Date
+    embeddings: Uint8Array
+    metadata: Uint8Array
+    _count: Embeddings_tbCountAggregateOutputType | null
+    _avg: Embeddings_tbAvgAggregateOutputType | null
+    _sum: Embeddings_tbSumAggregateOutputType | null
+    _min: Embeddings_tbMinAggregateOutputType | null
+    _max: Embeddings_tbMaxAggregateOutputType | null
+  }
+
+  type GetEmbeddings_tbGroupByPayload<T extends embeddings_tbGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Embeddings_tbGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Embeddings_tbGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Embeddings_tbGroupByOutputType[P]>
+            : GetScalarType<T[P], Embeddings_tbGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type embeddings_tbSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    embeddings?: boolean
+    metadata?: boolean
+  }, ExtArgs["result"]["embeddings_tb"]>
+
+
+
+  export type embeddings_tbSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    embeddings?: boolean
+    metadata?: boolean
+  }
+
+  export type embeddings_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "embeddings" | "metadata", ExtArgs["result"]["embeddings_tb"]>
+
+  export type $embeddings_tbPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "embeddings_tb"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: bigint
+      createdAt: Date
+      updatedAt: Date
+      embeddings: Uint8Array
+      metadata: Uint8Array
+    }, ExtArgs["result"]["embeddings_tb"]>
+    composites: {}
+  }
+
+  type embeddings_tbGetPayload<S extends boolean | null | undefined | embeddings_tbDefaultArgs> = $Result.GetResult<Prisma.$embeddings_tbPayload, S>
+
+  type embeddings_tbCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<embeddings_tbFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Embeddings_tbCountAggregateInputType | true
+    }
+
+  export interface embeddings_tbDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['embeddings_tb'], meta: { name: 'embeddings_tb' } }
+    /**
+     * Find zero or one Embeddings_tb that matches the filter.
+     * @param {embeddings_tbFindUniqueArgs} args - Arguments to find a Embeddings_tb
+     * @example
+     * // Get one Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends embeddings_tbFindUniqueArgs>(args: SelectSubset<T, embeddings_tbFindUniqueArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Embeddings_tb that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {embeddings_tbFindUniqueOrThrowArgs} args - Arguments to find a Embeddings_tb
+     * @example
+     * // Get one Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends embeddings_tbFindUniqueOrThrowArgs>(args: SelectSubset<T, embeddings_tbFindUniqueOrThrowArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Embeddings_tb that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbFindFirstArgs} args - Arguments to find a Embeddings_tb
+     * @example
+     * // Get one Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends embeddings_tbFindFirstArgs>(args?: SelectSubset<T, embeddings_tbFindFirstArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Embeddings_tb that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbFindFirstOrThrowArgs} args - Arguments to find a Embeddings_tb
+     * @example
+     * // Get one Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends embeddings_tbFindFirstOrThrowArgs>(args?: SelectSubset<T, embeddings_tbFindFirstOrThrowArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Embeddings_tbs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Embeddings_tbs
+     * const embeddings_tbs = await prisma.embeddings_tb.findMany()
+     * 
+     * // Get first 10 Embeddings_tbs
+     * const embeddings_tbs = await prisma.embeddings_tb.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const embeddings_tbWithIdOnly = await prisma.embeddings_tb.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends embeddings_tbFindManyArgs>(args?: SelectSubset<T, embeddings_tbFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Embeddings_tb.
+     * @param {embeddings_tbCreateArgs} args - Arguments to create a Embeddings_tb.
+     * @example
+     * // Create one Embeddings_tb
+     * const Embeddings_tb = await prisma.embeddings_tb.create({
+     *   data: {
+     *     // ... data to create a Embeddings_tb
+     *   }
+     * })
+     * 
+     */
+    create<T extends embeddings_tbCreateArgs>(args: SelectSubset<T, embeddings_tbCreateArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Embeddings_tbs.
+     * @param {embeddings_tbCreateManyArgs} args - Arguments to create many Embeddings_tbs.
+     * @example
+     * // Create many Embeddings_tbs
+     * const embeddings_tb = await prisma.embeddings_tb.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends embeddings_tbCreateManyArgs>(args?: SelectSubset<T, embeddings_tbCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Embeddings_tb.
+     * @param {embeddings_tbDeleteArgs} args - Arguments to delete one Embeddings_tb.
+     * @example
+     * // Delete one Embeddings_tb
+     * const Embeddings_tb = await prisma.embeddings_tb.delete({
+     *   where: {
+     *     // ... filter to delete one Embeddings_tb
+     *   }
+     * })
+     * 
+     */
+    delete<T extends embeddings_tbDeleteArgs>(args: SelectSubset<T, embeddings_tbDeleteArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Embeddings_tb.
+     * @param {embeddings_tbUpdateArgs} args - Arguments to update one Embeddings_tb.
+     * @example
+     * // Update one Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends embeddings_tbUpdateArgs>(args: SelectSubset<T, embeddings_tbUpdateArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Embeddings_tbs.
+     * @param {embeddings_tbDeleteManyArgs} args - Arguments to filter Embeddings_tbs to delete.
+     * @example
+     * // Delete a few Embeddings_tbs
+     * const { count } = await prisma.embeddings_tb.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends embeddings_tbDeleteManyArgs>(args?: SelectSubset<T, embeddings_tbDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Embeddings_tbs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Embeddings_tbs
+     * const embeddings_tb = await prisma.embeddings_tb.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends embeddings_tbUpdateManyArgs>(args: SelectSubset<T, embeddings_tbUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Embeddings_tb.
+     * @param {embeddings_tbUpsertArgs} args - Arguments to update or create a Embeddings_tb.
+     * @example
+     * // Update or create a Embeddings_tb
+     * const embeddings_tb = await prisma.embeddings_tb.upsert({
+     *   create: {
+     *     // ... data to create a Embeddings_tb
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Embeddings_tb we want to update
+     *   }
+     * })
+     */
+    upsert<T extends embeddings_tbUpsertArgs>(args: SelectSubset<T, embeddings_tbUpsertArgs<ExtArgs>>): Prisma__embeddings_tbClient<$Result.GetResult<Prisma.$embeddings_tbPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Embeddings_tbs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbCountArgs} args - Arguments to filter Embeddings_tbs to count.
+     * @example
+     * // Count the number of Embeddings_tbs
+     * const count = await prisma.embeddings_tb.count({
+     *   where: {
+     *     // ... the filter for the Embeddings_tbs we want to count
+     *   }
+     * })
+    **/
+    count<T extends embeddings_tbCountArgs>(
+      args?: Subset<T, embeddings_tbCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Embeddings_tbCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Embeddings_tb.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Embeddings_tbAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Embeddings_tbAggregateArgs>(args: Subset<T, Embeddings_tbAggregateArgs>): Prisma.PrismaPromise<GetEmbeddings_tbAggregateType<T>>
+
+    /**
+     * Group by Embeddings_tb.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {embeddings_tbGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends embeddings_tbGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: embeddings_tbGroupByArgs['orderBy'] }
+        : { orderBy?: embeddings_tbGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, embeddings_tbGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEmbeddings_tbGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the embeddings_tb model
+   */
+  readonly fields: embeddings_tbFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for embeddings_tb.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__embeddings_tbClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the embeddings_tb model
+   */ 
+  interface embeddings_tbFieldRefs {
+    readonly id: FieldRef<"embeddings_tb", 'BigInt'>
+    readonly createdAt: FieldRef<"embeddings_tb", 'DateTime'>
+    readonly updatedAt: FieldRef<"embeddings_tb", 'DateTime'>
+    readonly embeddings: FieldRef<"embeddings_tb", 'Bytes'>
+    readonly metadata: FieldRef<"embeddings_tb", 'Bytes'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * embeddings_tb findUnique
+   */
+  export type embeddings_tbFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter, which embeddings_tb to fetch.
+     */
+    where: embeddings_tbWhereUniqueInput
+  }
+
+  /**
+   * embeddings_tb findUniqueOrThrow
+   */
+  export type embeddings_tbFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter, which embeddings_tb to fetch.
+     */
+    where: embeddings_tbWhereUniqueInput
+  }
+
+  /**
+   * embeddings_tb findFirst
+   */
+  export type embeddings_tbFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter, which embeddings_tb to fetch.
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of embeddings_tbs to fetch.
+     */
+    orderBy?: embeddings_tbOrderByWithRelationInput | embeddings_tbOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for embeddings_tbs.
+     */
+    cursor?: embeddings_tbWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` embeddings_tbs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` embeddings_tbs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of embeddings_tbs.
+     */
+    distinct?: Embeddings_tbScalarFieldEnum | Embeddings_tbScalarFieldEnum[]
+  }
+
+  /**
+   * embeddings_tb findFirstOrThrow
+   */
+  export type embeddings_tbFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter, which embeddings_tb to fetch.
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of embeddings_tbs to fetch.
+     */
+    orderBy?: embeddings_tbOrderByWithRelationInput | embeddings_tbOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for embeddings_tbs.
+     */
+    cursor?: embeddings_tbWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` embeddings_tbs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` embeddings_tbs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of embeddings_tbs.
+     */
+    distinct?: Embeddings_tbScalarFieldEnum | Embeddings_tbScalarFieldEnum[]
+  }
+
+  /**
+   * embeddings_tb findMany
+   */
+  export type embeddings_tbFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter, which embeddings_tbs to fetch.
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of embeddings_tbs to fetch.
+     */
+    orderBy?: embeddings_tbOrderByWithRelationInput | embeddings_tbOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing embeddings_tbs.
+     */
+    cursor?: embeddings_tbWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` embeddings_tbs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` embeddings_tbs.
+     */
+    skip?: number
+    distinct?: Embeddings_tbScalarFieldEnum | Embeddings_tbScalarFieldEnum[]
+  }
+
+  /**
+   * embeddings_tb create
+   */
+  export type embeddings_tbCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * The data needed to create a embeddings_tb.
+     */
+    data: XOR<embeddings_tbCreateInput, embeddings_tbUncheckedCreateInput>
+  }
+
+  /**
+   * embeddings_tb createMany
+   */
+  export type embeddings_tbCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many embeddings_tbs.
+     */
+    data: embeddings_tbCreateManyInput | embeddings_tbCreateManyInput[]
+  }
+
+  /**
+   * embeddings_tb update
+   */
+  export type embeddings_tbUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * The data needed to update a embeddings_tb.
+     */
+    data: XOR<embeddings_tbUpdateInput, embeddings_tbUncheckedUpdateInput>
+    /**
+     * Choose, which embeddings_tb to update.
+     */
+    where: embeddings_tbWhereUniqueInput
+  }
+
+  /**
+   * embeddings_tb updateMany
+   */
+  export type embeddings_tbUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update embeddings_tbs.
+     */
+    data: XOR<embeddings_tbUpdateManyMutationInput, embeddings_tbUncheckedUpdateManyInput>
+    /**
+     * Filter which embeddings_tbs to update
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * Limit how many embeddings_tbs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * embeddings_tb upsert
+   */
+  export type embeddings_tbUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * The filter to search for the embeddings_tb to update in case it exists.
+     */
+    where: embeddings_tbWhereUniqueInput
+    /**
+     * In case the embeddings_tb found by the `where` argument doesn't exist, create a new embeddings_tb with this data.
+     */
+    create: XOR<embeddings_tbCreateInput, embeddings_tbUncheckedCreateInput>
+    /**
+     * In case the embeddings_tb was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<embeddings_tbUpdateInput, embeddings_tbUncheckedUpdateInput>
+  }
+
+  /**
+   * embeddings_tb delete
+   */
+  export type embeddings_tbDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+    /**
+     * Filter which embeddings_tb to delete.
+     */
+    where: embeddings_tbWhereUniqueInput
+  }
+
+  /**
+   * embeddings_tb deleteMany
+   */
+  export type embeddings_tbDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which embeddings_tbs to delete
+     */
+    where?: embeddings_tbWhereInput
+    /**
+     * Limit how many embeddings_tbs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * embeddings_tb without action
+   */
+  export type embeddings_tbDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the embeddings_tb
+     */
+    select?: embeddings_tbSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the embeddings_tb
+     */
+    omit?: embeddings_tbOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model log_tb
    */
 
@@ -6278,17 +7276,17 @@ export namespace Prisma {
   }
 
   export type Log_tbSumAggregateOutputType = {
-    id: number | null
+    id: bigint | null
   }
 
   export type Log_tbMinAggregateOutputType = {
-    id: number | null
+    id: bigint | null
     createdAt: Date | null
     message: string | null
   }
 
   export type Log_tbMaxAggregateOutputType = {
-    id: number | null
+    id: bigint | null
     createdAt: Date | null
     message: string | null
   }
@@ -6415,7 +7413,7 @@ export namespace Prisma {
   }
 
   export type Log_tbGroupByOutputType = {
-    id: number
+    id: bigint
     createdAt: Date
     message: string
     _count: Log_tbCountAggregateOutputType | null
@@ -6459,7 +7457,7 @@ export namespace Prisma {
     name: "log_tb"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: bigint
       createdAt: Date
       message: string
     }, ExtArgs["result"]["log_tb"]>
@@ -6831,7 +7829,7 @@ export namespace Prisma {
    * Fields of the log_tb model
    */ 
   interface log_tbFieldRefs {
-    readonly id: FieldRef<"log_tb", 'Int'>
+    readonly id: FieldRef<"log_tb", 'BigInt'>
     readonly createdAt: FieldRef<"log_tb", 'DateTime'>
     readonly message: FieldRef<"log_tb", 'String'>
   }
@@ -7223,6 +8221,17 @@ export namespace Prisma {
   export type Chapter_tbScalarFieldEnum = (typeof Chapter_tbScalarFieldEnum)[keyof typeof Chapter_tbScalarFieldEnum]
 
 
+  export const Embeddings_tbScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    embeddings: 'embeddings',
+    metadata: 'metadata'
+  };
+
+  export type Embeddings_tbScalarFieldEnum = (typeof Embeddings_tbScalarFieldEnum)[keyof typeof Embeddings_tbScalarFieldEnum]
+
+
   export const Log_tbScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
@@ -7246,9 +8255,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
+   * Reference to a field of type 'BigInt'
    */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
     
 
 
@@ -7267,6 +8276,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -7280,7 +8303,7 @@ export namespace Prisma {
     AND?: user_tbWhereInput | user_tbWhereInput[]
     OR?: user_tbWhereInput[]
     NOT?: user_tbWhereInput | user_tbWhereInput[]
-    userId?: IntFilter<"user_tb"> | number
+    userId?: BigIntFilter<"user_tb"> | bigint | number
     userName?: StringFilter<"user_tb"> | string
     userEmail?: StringFilter<"user_tb"> | string
     userPassword?: StringFilter<"user_tb"> | string
@@ -7298,7 +8321,7 @@ export namespace Prisma {
   }
 
   export type user_tbWhereUniqueInput = Prisma.AtLeast<{
-    userId?: number
+    userId?: bigint | number
     AND?: user_tbWhereInput | user_tbWhereInput[]
     OR?: user_tbWhereInput[]
     NOT?: user_tbWhereInput | user_tbWhereInput[]
@@ -7326,7 +8349,7 @@ export namespace Prisma {
     AND?: user_tbScalarWhereWithAggregatesInput | user_tbScalarWhereWithAggregatesInput[]
     OR?: user_tbScalarWhereWithAggregatesInput[]
     NOT?: user_tbScalarWhereWithAggregatesInput | user_tbScalarWhereWithAggregatesInput[]
-    userId?: IntWithAggregatesFilter<"user_tb"> | number
+    userId?: BigIntWithAggregatesFilter<"user_tb"> | bigint | number
     userName?: StringWithAggregatesFilter<"user_tb"> | string
     userEmail?: StringWithAggregatesFilter<"user_tb"> | string
     userPassword?: StringWithAggregatesFilter<"user_tb"> | string
@@ -7337,8 +8360,8 @@ export namespace Prisma {
     AND?: chat_tbWhereInput | chat_tbWhereInput[]
     OR?: chat_tbWhereInput[]
     NOT?: chat_tbWhereInput | chat_tbWhereInput[]
-    chatId?: IntFilter<"chat_tb"> | number
-    userId?: IntFilter<"chat_tb"> | number
+    chatId?: BigIntFilter<"chat_tb"> | bigint | number
+    userId?: BigIntFilter<"chat_tb"> | bigint | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
@@ -7355,11 +8378,11 @@ export namespace Prisma {
   }
 
   export type chat_tbWhereUniqueInput = Prisma.AtLeast<{
-    chatId?: number
+    chatId?: bigint | number
     AND?: chat_tbWhereInput | chat_tbWhereInput[]
     OR?: chat_tbWhereInput[]
     NOT?: chat_tbWhereInput | chat_tbWhereInput[]
-    userId?: IntFilter<"chat_tb"> | number
+    userId?: BigIntFilter<"chat_tb"> | bigint | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
@@ -7382,8 +8405,8 @@ export namespace Prisma {
     AND?: chat_tbScalarWhereWithAggregatesInput | chat_tbScalarWhereWithAggregatesInput[]
     OR?: chat_tbScalarWhereWithAggregatesInput[]
     NOT?: chat_tbScalarWhereWithAggregatesInput | chat_tbScalarWhereWithAggregatesInput[]
-    chatId?: IntWithAggregatesFilter<"chat_tb"> | number
-    userId?: IntWithAggregatesFilter<"chat_tb"> | number
+    chatId?: BigIntWithAggregatesFilter<"chat_tb"> | bigint | number
+    userId?: BigIntWithAggregatesFilter<"chat_tb"> | bigint | number
     chatHeader?: StringWithAggregatesFilter<"chat_tb"> | string
     createAt?: DateTimeWithAggregatesFilter<"chat_tb"> | Date | string
   }
@@ -7392,8 +8415,8 @@ export namespace Prisma {
     AND?: qNa_tbWhereInput | qNa_tbWhereInput[]
     OR?: qNa_tbWhereInput[]
     NOT?: qNa_tbWhereInput | qNa_tbWhereInput[]
-    qNaId?: IntFilter<"qNa_tb"> | number
-    chatId?: IntFilter<"qNa_tb"> | number
+    qNaId?: BigIntFilter<"qNa_tb"> | bigint | number
+    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
@@ -7410,11 +8433,11 @@ export namespace Prisma {
   }
 
   export type qNa_tbWhereUniqueInput = Prisma.AtLeast<{
-    qNaId?: number
+    qNaId?: bigint | number
     AND?: qNa_tbWhereInput | qNa_tbWhereInput[]
     OR?: qNa_tbWhereInput[]
     NOT?: qNa_tbWhereInput | qNa_tbWhereInput[]
-    chatId?: IntFilter<"qNa_tb"> | number
+    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
@@ -7438,8 +8461,8 @@ export namespace Prisma {
     AND?: qNa_tbScalarWhereWithAggregatesInput | qNa_tbScalarWhereWithAggregatesInput[]
     OR?: qNa_tbScalarWhereWithAggregatesInput[]
     NOT?: qNa_tbScalarWhereWithAggregatesInput | qNa_tbScalarWhereWithAggregatesInput[]
-    qNaId?: IntWithAggregatesFilter<"qNa_tb"> | number
-    chatId?: IntWithAggregatesFilter<"qNa_tb"> | number
+    qNaId?: BigIntWithAggregatesFilter<"qNa_tb"> | bigint | number
+    chatId?: BigIntWithAggregatesFilter<"qNa_tb"> | bigint | number
     qNaWords?: StringWithAggregatesFilter<"qNa_tb"> | string
     qNaType?: StringWithAggregatesFilter<"qNa_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"qNa_tb"> | Date | string
@@ -7449,7 +8472,7 @@ export namespace Prisma {
     AND?: book_tbWhereInput | book_tbWhereInput[]
     OR?: book_tbWhereInput[]
     NOT?: book_tbWhereInput | book_tbWhereInput[]
-    bookId?: IntFilter<"book_tb"> | number
+    bookId?: BigIntFilter<"book_tb"> | bigint | number
     bookName?: StringFilter<"book_tb"> | string
     createdAt?: DateTimeFilter<"book_tb"> | Date | string
     updatedAt?: DateTimeFilter<"book_tb"> | Date | string
@@ -7465,7 +8488,7 @@ export namespace Prisma {
   }
 
   export type book_tbWhereUniqueInput = Prisma.AtLeast<{
-    bookId?: number
+    bookId?: bigint | number
     AND?: book_tbWhereInput | book_tbWhereInput[]
     OR?: book_tbWhereInput[]
     NOT?: book_tbWhereInput | book_tbWhereInput[]
@@ -7491,7 +8514,7 @@ export namespace Prisma {
     AND?: book_tbScalarWhereWithAggregatesInput | book_tbScalarWhereWithAggregatesInput[]
     OR?: book_tbScalarWhereWithAggregatesInput[]
     NOT?: book_tbScalarWhereWithAggregatesInput | book_tbScalarWhereWithAggregatesInput[]
-    bookId?: IntWithAggregatesFilter<"book_tb"> | number
+    bookId?: BigIntWithAggregatesFilter<"book_tb"> | bigint | number
     bookName?: StringWithAggregatesFilter<"book_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"book_tb"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"book_tb"> | Date | string
@@ -7501,8 +8524,8 @@ export namespace Prisma {
     AND?: chapter_tbWhereInput | chapter_tbWhereInput[]
     OR?: chapter_tbWhereInput[]
     NOT?: chapter_tbWhereInput | chapter_tbWhereInput[]
-    chapterId?: IntFilter<"chapter_tb"> | number
-    bookId?: IntFilter<"chapter_tb"> | number
+    chapterId?: BigIntFilter<"chapter_tb"> | bigint | number
+    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -7521,11 +8544,11 @@ export namespace Prisma {
   }
 
   export type chapter_tbWhereUniqueInput = Prisma.AtLeast<{
-    chapterId?: number
+    chapterId?: bigint | number
     AND?: chapter_tbWhereInput | chapter_tbWhereInput[]
     OR?: chapter_tbWhereInput[]
     NOT?: chapter_tbWhereInput | chapter_tbWhereInput[]
-    bookId?: IntFilter<"chapter_tb"> | number
+    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -7551,19 +8574,73 @@ export namespace Prisma {
     AND?: chapter_tbScalarWhereWithAggregatesInput | chapter_tbScalarWhereWithAggregatesInput[]
     OR?: chapter_tbScalarWhereWithAggregatesInput[]
     NOT?: chapter_tbScalarWhereWithAggregatesInput | chapter_tbScalarWhereWithAggregatesInput[]
-    chapterId?: IntWithAggregatesFilter<"chapter_tb"> | number
-    bookId?: IntWithAggregatesFilter<"chapter_tb"> | number
+    chapterId?: BigIntWithAggregatesFilter<"chapter_tb"> | bigint | number
+    bookId?: BigIntWithAggregatesFilter<"chapter_tb"> | bigint | number
     chapterName?: StringWithAggregatesFilter<"chapter_tb"> | string
     chapterText?: StringWithAggregatesFilter<"chapter_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"chapter_tb"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"chapter_tb"> | Date | string
   }
 
+  export type embeddings_tbWhereInput = {
+    AND?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
+    OR?: embeddings_tbWhereInput[]
+    NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
+    id?: BigIntFilter<"embeddings_tb"> | bigint | number
+    createdAt?: DateTimeFilter<"embeddings_tb"> | Date | string
+    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
+    embeddings?: BytesFilter<"embeddings_tb"> | Uint8Array
+    metadata?: BytesFilter<"embeddings_tb"> | Uint8Array
+  }
+
+  export type embeddings_tbOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    embeddings?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type embeddings_tbWhereUniqueInput = Prisma.AtLeast<{
+    id?: bigint | number
+    AND?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
+    OR?: embeddings_tbWhereInput[]
+    NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
+    createdAt?: DateTimeFilter<"embeddings_tb"> | Date | string
+    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
+    embeddings?: BytesFilter<"embeddings_tb"> | Uint8Array
+    metadata?: BytesFilter<"embeddings_tb"> | Uint8Array
+  }, "id">
+
+  export type embeddings_tbOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    embeddings?: SortOrder
+    metadata?: SortOrder
+    _count?: embeddings_tbCountOrderByAggregateInput
+    _avg?: embeddings_tbAvgOrderByAggregateInput
+    _max?: embeddings_tbMaxOrderByAggregateInput
+    _min?: embeddings_tbMinOrderByAggregateInput
+    _sum?: embeddings_tbSumOrderByAggregateInput
+  }
+
+  export type embeddings_tbScalarWhereWithAggregatesInput = {
+    AND?: embeddings_tbScalarWhereWithAggregatesInput | embeddings_tbScalarWhereWithAggregatesInput[]
+    OR?: embeddings_tbScalarWhereWithAggregatesInput[]
+    NOT?: embeddings_tbScalarWhereWithAggregatesInput | embeddings_tbScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"embeddings_tb"> | bigint | number
+    createdAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
+    embeddings?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
+    metadata?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
+  }
+
   export type log_tbWhereInput = {
     AND?: log_tbWhereInput | log_tbWhereInput[]
     OR?: log_tbWhereInput[]
     NOT?: log_tbWhereInput | log_tbWhereInput[]
-    id?: IntFilter<"log_tb"> | number
+    id?: BigIntFilter<"log_tb"> | bigint | number
     createdAt?: DateTimeFilter<"log_tb"> | Date | string
     message?: StringFilter<"log_tb"> | string
   }
@@ -7575,7 +8652,7 @@ export namespace Prisma {
   }
 
   export type log_tbWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
+    id?: bigint | number
     AND?: log_tbWhereInput | log_tbWhereInput[]
     OR?: log_tbWhereInput[]
     NOT?: log_tbWhereInput | log_tbWhereInput[]
@@ -7598,12 +8675,13 @@ export namespace Prisma {
     AND?: log_tbScalarWhereWithAggregatesInput | log_tbScalarWhereWithAggregatesInput[]
     OR?: log_tbScalarWhereWithAggregatesInput[]
     NOT?: log_tbScalarWhereWithAggregatesInput | log_tbScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"log_tb"> | number
+    id?: BigIntWithAggregatesFilter<"log_tb"> | bigint | number
     createdAt?: DateTimeWithAggregatesFilter<"log_tb"> | Date | string
     message?: StringWithAggregatesFilter<"log_tb"> | string
   }
 
   export type user_tbCreateInput = {
+    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -7612,7 +8690,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedCreateInput = {
-    userId?: number
+    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -7621,6 +8699,7 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateInput = {
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -7629,7 +8708,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateInput = {
-    userId?: IntFieldUpdateOperationsInput | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -7645,6 +8724,7 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateManyMutationInput = {
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -7652,7 +8732,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateManyInput = {
-    userId?: IntFieldUpdateOperationsInput | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -7660,6 +8740,7 @@ export namespace Prisma {
   }
 
   export type chat_tbCreateInput = {
+    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
@@ -7667,14 +8748,15 @@ export namespace Prisma {
   }
 
   export type chat_tbUncheckedCreateInput = {
-    chatId?: number
-    userId: number
+    chatId?: bigint | number
+    userId: bigint | number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUpdateInput = {
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
@@ -7682,32 +8764,34 @@ export namespace Prisma {
   }
 
   export type chat_tbUncheckedUpdateInput = {
-    chatId?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbCreateManyInput = {
-    userId: number
+    userId: bigint | number
     chatHeader: string
     createAt?: Date | string
   }
 
   export type chat_tbUpdateManyMutationInput = {
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chat_tbUncheckedUpdateManyInput = {
-    chatId?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateInput = {
+    qNaId?: bigint | number
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
@@ -7715,14 +8799,15 @@ export namespace Prisma {
   }
 
   export type qNa_tbUncheckedCreateInput = {
-    qNaId?: number
-    chatId: number
+    qNaId?: bigint | number
+    chatId: bigint | number
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUpdateInput = {
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7730,35 +8815,37 @@ export namespace Prisma {
   }
 
   export type qNa_tbUncheckedUpdateInput = {
-    qNaId?: IntFieldUpdateOperationsInput | number
-    chatId?: IntFieldUpdateOperationsInput | number
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateManyInput = {
-    chatId: number
+    chatId: bigint | number
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUpdateManyMutationInput = {
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateManyInput = {
-    qNaId?: IntFieldUpdateOperationsInput | number
-    chatId?: IntFieldUpdateOperationsInput | number
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbCreateInput = {
+    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7766,7 +8853,7 @@ export namespace Prisma {
   }
 
   export type book_tbUncheckedCreateInput = {
-    bookId?: number
+    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7774,6 +8861,7 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateInput = {
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7781,7 +8869,7 @@ export namespace Prisma {
   }
 
   export type book_tbUncheckedUpdateInput = {
-    bookId?: IntFieldUpdateOperationsInput | number
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7795,19 +8883,21 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateManyMutationInput = {
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbUncheckedUpdateManyInput = {
-    bookId?: IntFieldUpdateOperationsInput | number
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chapter_tbCreateInput = {
+    chapterId?: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -7816,8 +8906,8 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedCreateInput = {
-    chapterId?: number
-    bookId: number
+    chapterId?: bigint | number
+    bookId: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -7825,6 +8915,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateInput = {
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7833,8 +8924,8 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateInput = {
-    chapterId?: IntFieldUpdateOperationsInput | number
-    bookId?: IntFieldUpdateOperationsInput | number
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7842,7 +8933,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbCreateManyInput = {
-    bookId: number
+    bookId: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -7850,6 +8941,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateManyMutationInput = {
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7857,32 +8949,89 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateManyInput = {
-    chapterId?: IntFieldUpdateOperationsInput | number
-    bookId?: IntFieldUpdateOperationsInput | number
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type embeddings_tbCreateInput = {
+    id?: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    embeddings: Uint8Array
+    metadata: Uint8Array
+  }
+
+  export type embeddings_tbUncheckedCreateInput = {
+    id?: bigint | number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    embeddings: Uint8Array
+    metadata: Uint8Array
+  }
+
+  export type embeddings_tbUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
+    metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+  }
+
+  export type embeddings_tbUncheckedUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
+    metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+  }
+
+  export type embeddings_tbCreateManyInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    embeddings: Uint8Array
+    metadata: Uint8Array
+  }
+
+  export type embeddings_tbUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
+    metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+  }
+
+  export type embeddings_tbUncheckedUpdateManyInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
+    metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+  }
+
   export type log_tbCreateInput = {
+    id?: bigint | number
     createdAt?: Date | string
     message: string
   }
 
   export type log_tbUncheckedCreateInput = {
-    id?: number
+    id?: bigint | number
     createdAt?: Date | string
     message: string
   }
 
   export type log_tbUpdateInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
   export type log_tbUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
@@ -7893,25 +9042,26 @@ export namespace Prisma {
   }
 
   export type log_tbUpdateManyMutationInput = {
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
   export type log_tbUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[]
+    notIn?: bigint[] | number[]
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -7981,20 +9131,20 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[]
+    notIn?: bigint[] | number[]
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
     _count?: NestedIntFilter<$PrismaModel>
     _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -8194,6 +9344,55 @@ export namespace Prisma {
     bookId?: SortOrder
   }
 
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
+    in?: Uint8Array[]
+    notIn?: Uint8Array[]
+    not?: NestedBytesFilter<$PrismaModel> | Uint8Array
+  }
+
+  export type embeddings_tbCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    embeddings?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type embeddings_tbAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type embeddings_tbMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    embeddings?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type embeddings_tbMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    embeddings?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type embeddings_tbSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
+    in?: Uint8Array[]
+    notIn?: Uint8Array[]
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Uint8Array
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
   export type log_tbCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -8234,6 +9433,14 @@ export namespace Prisma {
     connect?: chat_tbWhereUniqueInput | chat_tbWhereUniqueInput[]
   }
 
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -8254,14 +9461,6 @@ export namespace Prisma {
     update?: chat_tbUpdateWithWhereUniqueWithoutUserInput | chat_tbUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: chat_tbUpdateManyWithWhereWithoutUserInput | chat_tbUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type chat_tbUncheckedUpdateManyWithoutUserNestedInput = {
@@ -8404,15 +9603,19 @@ export namespace Prisma {
     update?: XOR<XOR<book_tbUpdateToOneWithWhereWithoutChaptersInput, book_tbUpdateWithoutChaptersInput>, book_tbUncheckedUpdateWithoutChaptersInput>
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Uint8Array
+  }
+
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[]
+    notIn?: bigint[] | number[]
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -8440,7 +9643,23 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[]
+    notIn?: bigint[] | number[]
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
     notIn?: number[]
@@ -8448,12 +9667,7 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -8498,14 +9712,32 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
+    in?: Uint8Array[]
+    notIn?: Uint8Array[]
+    not?: NestedBytesFilter<$PrismaModel> | Uint8Array
+  }
+
+  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
+    in?: Uint8Array[]
+    notIn?: Uint8Array[]
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Uint8Array
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
   export type chat_tbCreateWithoutUserInput = {
+    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUncheckedCreateWithoutUserInput = {
-    chatId?: number
+    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
@@ -8540,13 +9772,14 @@ export namespace Prisma {
     AND?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
     OR?: chat_tbScalarWhereInput[]
     NOT?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
-    chatId?: IntFilter<"chat_tb"> | number
-    userId?: IntFilter<"chat_tb"> | number
+    chatId?: BigIntFilter<"chat_tb"> | bigint | number
+    userId?: BigIntFilter<"chat_tb"> | bigint | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
   }
 
   export type user_tbCreateWithoutChatsInput = {
+    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -8554,7 +9787,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedCreateWithoutChatsInput = {
-    userId?: number
+    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -8567,13 +9800,14 @@ export namespace Prisma {
   }
 
   export type qNa_tbCreateWithoutChatInput = {
+    qNaId?: bigint | number
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUncheckedCreateWithoutChatInput = {
-    qNaId?: number
+    qNaId?: bigint | number
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
@@ -8600,6 +9834,7 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateWithoutChatsInput = {
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8607,7 +9842,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateWithoutChatsInput = {
-    userId?: IntFieldUpdateOperationsInput | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8634,22 +9869,23 @@ export namespace Prisma {
     AND?: qNa_tbScalarWhereInput | qNa_tbScalarWhereInput[]
     OR?: qNa_tbScalarWhereInput[]
     NOT?: qNa_tbScalarWhereInput | qNa_tbScalarWhereInput[]
-    qNaId?: IntFilter<"qNa_tb"> | number
-    chatId?: IntFilter<"qNa_tb"> | number
+    qNaId?: BigIntFilter<"qNa_tb"> | bigint | number
+    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
   }
 
   export type chat_tbCreateWithoutQnasInput = {
+    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
   }
 
   export type chat_tbUncheckedCreateWithoutQnasInput = {
-    chatId?: number
-    userId: number
+    chatId?: bigint | number
+    userId: bigint | number
     chatHeader: string
     createAt?: Date | string
   }
@@ -8671,19 +9907,21 @@ export namespace Prisma {
   }
 
   export type chat_tbUpdateWithoutQnasInput = {
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
   }
 
   export type chat_tbUncheckedUpdateWithoutQnasInput = {
-    chatId?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chapter_tbCreateWithoutBookInput = {
+    chapterId?: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -8691,7 +9929,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedCreateWithoutBookInput = {
-    chapterId?: number
+    chapterId?: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -8727,8 +9965,8 @@ export namespace Prisma {
     AND?: chapter_tbScalarWhereInput | chapter_tbScalarWhereInput[]
     OR?: chapter_tbScalarWhereInput[]
     NOT?: chapter_tbScalarWhereInput | chapter_tbScalarWhereInput[]
-    chapterId?: IntFilter<"chapter_tb"> | number
-    bookId?: IntFilter<"chapter_tb"> | number
+    chapterId?: BigIntFilter<"chapter_tb"> | bigint | number
+    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -8736,13 +9974,14 @@ export namespace Prisma {
   }
 
   export type book_tbCreateWithoutChaptersInput = {
+    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type book_tbUncheckedCreateWithoutChaptersInput = {
-    bookId?: number
+    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8765,13 +10004,14 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateWithoutChaptersInput = {
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbUncheckedUpdateWithoutChaptersInput = {
-    bookId?: IntFieldUpdateOperationsInput | number
+    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8783,20 +10023,21 @@ export namespace Prisma {
   }
 
   export type chat_tbUpdateWithoutUserInput = {
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateWithoutUserInput = {
-    chatId?: IntFieldUpdateOperationsInput | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateManyWithoutUserInput = {
-    chatId?: IntFieldUpdateOperationsInput | number
+    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8808,20 +10049,21 @@ export namespace Prisma {
   }
 
   export type qNa_tbUpdateWithoutChatInput = {
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateWithoutChatInput = {
-    qNaId?: IntFieldUpdateOperationsInput | number
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateManyWithoutChatInput = {
-    qNaId?: IntFieldUpdateOperationsInput | number
+    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8835,6 +10077,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateWithoutBookInput = {
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8842,7 +10085,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateWithoutBookInput = {
-    chapterId?: IntFieldUpdateOperationsInput | number
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8850,7 +10093,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateManyWithoutBookInput = {
-    chapterId?: IntFieldUpdateOperationsInput | number
+    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
