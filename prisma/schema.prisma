@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -7,20 +8,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user_tb {
+  userId       Int       @id @default(autoincrement())
+  userName     String    @db.VarChar(100)
+  userEmail    String    @db.VarChar(50)
+  userPassword String    @db.VarChar(50)
+  createAt     DateTime  @default(now())
+
+  chats        chat_tb[]
+}
+
 model chat_tb {
-  chatId     Int      @id @default(autoincrement())
-  chatHeader String   @db.NVarChar(50)
-  createdAt  DateTime @default(now()) //UTC Time
-  
-  qnas       qNa_tb[]
+  chatId      Int       @id @default(autoincrement())
+  userId      Int
+  chatHeader  String    @db.NVarChar(50)
+  createAt    DateTime  @default(now())
+
+  user        user_tb   @relation(fields: [userId], references: [userId])
+  qnas        qNa_tb[]
 }
 
 model qNa_tb {
-  qNaId    Int      @id @default(autoincrement())
-  chatId   Int
-  qNaWords String   @db.NVarChar(Max)
-  qNaType  String   @db.Char(1)
-  createdAt  DateTime @default(now()) //UTC Time
-  
-  chat     chat_tb  @relation(fields: [chatId], references: [chatId])
+  qNaId     Int       @id @default(autoincrement())
+  chatId    Int
+  qNaWords  String    @db.NVarChar(MAX)
+  qNaType   String    @db.Char(1)
+  createdAt DateTime  @default(now())
+
+  chat      chat_tb   @relation(fields: [chatId], references: [chatId])
+}
+
+model book_tb {
+  bookId    Int           @id @default(autoincrement())
+  bookName  String        @db.NVarChar(MAX)
+  chapters  chapter_tb[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt @default(now())
+}
+
+model chapter_tb {
+  chapterId   Int        @id @default(autoincrement())
+  bookId      Int
+  chapterName String     @db.NVarChar(50)
+  chapterText String     @db.NVarChar(MAX)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt @default(now())
+
+  book        book_tb    @relation(fields: [bookId], references: [bookId])
+}
+
+model log_tb {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  message   String   @db.NVarChar(MAX)
 }

@@ -1,5 +1,47 @@
-import datetime
+from datetime import datetime
+import json
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
+from log_model import Base, Log
+
+with open("config.json", "r", encoding="utf-8") as f:
+    config = json.load(f)
+
+db_conf = config["database"]
+
+driver = db_conf.get("driver", "ODBC Driver 18 for SQL Server").replace(" ", "+")
+
+conn_str = (
+    f"mssql+pyodbc://{db_conf['user']}:{db_conf['password']}"
+    f"@{db_conf['server']}:{db_conf['port']}/{db_conf['database']}"
+    f"?driver={driver}&TrustServerCertificate=yes&charset=utf8"
+)
+
+engine = create_engine(conn_str, pool_pre_ping=True)
+Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+Base.metadata.create_all(engine)
+
+def log(*args):
+    log_to_file(*args)
+    message_text = " ".join(str(a) for a in args)
+    createdAt = datetime.now()
+    entry_text = f"{message_text}"
+    # entry_text = f"[{createdAt.strftime('%d-%m-%Y %H:%M:%S')}] {message_text}"
+
+    session = Session()
+    try:
+        # ตรงกับชื่อ column จริง
+        log_entry = Log(message=entry_text, createdAt=createdAt)
+        session.add(log_entry)
+        session.commit()
+    except SQLAlchemyError as e:
+        print(f"Error logging message: {e}")
+        session.rollback()
+    finally:
+        session.close()
 
 def format_duration(seconds: float) -> str:
     year = 365 * 24 * 3600
@@ -47,10 +89,10 @@ def format_duration(seconds: float) -> str:
 
     return " ".join(parts) if parts else "0 ไมโครวินาที"
 
-def log(*args):
+def log_to_file(*args):
     log_message = " ".join(str(a) for a in args)
     log_file = "buddhamAI_cli.log"
-    timestamp = datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y")
+    timestamp = datetime.now().strftime("%H:%M:%S %d-%m-%Y")
     new_entry = f"[{timestamp}] {log_message}"
 
     # เช็คว่ามีเนื้อหาและลงท้ายด้วย \n หรือไม่

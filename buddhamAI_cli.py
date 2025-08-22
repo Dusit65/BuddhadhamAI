@@ -6,9 +6,12 @@ import json
 import time
 import subprocess
 import traceback
-from reDocuments import reDocuments
+import numpy as np
+import faiss
+import ollama
+from reDocuments import reDocuments, create_and_save_embeddings_and_metadata, save_last_embed_time
 from debugger import format_duration, log
-from get_required_packages import check_and_install_packages, required_packages
+from db_handler import fetch_documents, get_last_update_time
 
 try:
     def clear_screen():
@@ -19,15 +22,17 @@ try:
     
     log_file = "buddhamAI_cli.log"
     required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
-        
+    EMB_PATH = "embeddings.npy"
+    META_PATH = "metadata.pkl"
+    DOCS_ALL_PATH = "documents/documentsPkl/documents_all.pkl"
+    start = None
+    end = None
+    STATUS_FILE = "embed_status.json"
+    
     if not os.path.exists(log_file):
         open(log_file, "w").close()
     with open(log_file, "r+") as f:
         f.truncate(0)
-        
-    modules = check_and_install_packages(required_packages)
-    for alias, module in modules.items():
-        globals()[alias] = module
 
     def get_installed_models():
         # ลองใช้ --json ก่อน
@@ -72,12 +77,6 @@ try:
             log("❌ เกิดข้อผิดพลาด:\n" + traceback.format_exc())
             exit(1)
 
-    EMB_PATH = "embeddings.npy"
-    META_PATH = "metadata.pkl"
-    DOCS_ALL_PATH = "documents/documentsPkl/documents_all.pkl"
-    start = None
-    end = None
-
     def load_all_documents_pickle(path=DOCS_ALL_PATH):
         if not os.path.isfile(path):
             log(f"ไม่พบไฟล์ {path} รัน reDocuments() แทน")
@@ -104,28 +103,12 @@ try:
             for chapter_key, pages in chapters.items():
                 for page_key, content in pages.items():
                     chapter_num = int(chapter_key.replace("chapter ", ""))
-                    page_num = int(page_key.replace("page ", ""))
                     docs.append({
                         "bookname": book_name,
                         "chapter": chapter_num,
-                        "page": page_num,
                         "content": content
                     })
         return docs
-
-    def create_and_save_embeddings_and_metadata(docs):
-        embeddings = []
-        for doc in docs:
-            content = doc.get("content", "")
-            if not content:
-                continue
-            emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=content)['embedding']
-            embeddings.append(emb)
-        embeddings = np.array(embeddings, dtype='float32')
-        log(f"กำลังสร้าง {EMB_PATH}")
-        np.save(EMB_PATH, embeddings)
-        with open(META_PATH, 'wb') as f:
-            pickle.dump(docs, f)
 
     def load_embeddings_and_metadata():
         log(f"ใช้ embeddings {required_models[1]}")
@@ -164,9 +147,9 @@ try:
         return results
 
     def short_references(metadata):
-        sorted_docs = sorted(metadata, key=lambda d: (d['bookname'], d['chapter'], d['page']))
+        sorted_docs = sorted(metadata, key=lambda d: (d['bookname'], d['chapter']))
         return ", ".join([
-            f"{d['bookname']} บท {d['chapter']} หน้า {d['page']}"
+            f"{d['bookname']} บท {d['chapter']}"
             for d in sorted_docs
         ])
 
@@ -214,12 +197,25 @@ try:
                 "references": "",
                 "duration": 0
             }
-        
+    
+    def read_last_embed_time():
+        if not os.path.exists(STATUS_FILE):
+            return "1970-01-01 00:00:00"
+        with open(STATUS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)["last_embed_time"]
+
     def init_bot():
-        documents_raw = load_all_documents_pickle()
-        documents = flatten_docs(documents_raw)
-        if not (os.path.exists(EMB_PATH) and os.path.exists(META_PATH)):
+        # เช็คเวลาอัพเดต
+        db_last_update = get_last_update_time()
+        embed_last_update = read_last_embed_time()
+
+        # ถ้า DB ใหม่กว่า embeddings → regenerate
+        if db_last_update > embed_last_update or not (os.path.exists(EMB_PATH) and os.path.exists(META_PATH)):
+            log("DB ใหม่กว่า embeddings → regenerate...")
+            documents = fetch_documents()
             create_and_save_embeddings_and_metadata(documents)
+            save_last_embed_time(db_last_update)
+
         embeddings, metadata = load_embeddings_and_metadata()
         dimension = embeddings.shape[1]
         index = faiss.IndexFlatL2(dimension)
@@ -279,6 +275,7 @@ try:
 
     if __name__ == "__main__":
         ask_cli()
+        
 except Exception:
     err_msg = traceback.format_exc()
     try:
@@ -288,5 +285,10 @@ except Exception:
         log(json_str)
         print(json_str)
     except:
+        log("เกิดข้อผิดพลาด: " + err_msg)
+        data = {"answer": f"เกิดข้อผิดพลาด: {err_msg}", "status": 500}
+        json_str = json.dumps(data, ensure_ascii=False)
+        log(json_str)
+        print(json_str)
         pass
     sys.exit(1)

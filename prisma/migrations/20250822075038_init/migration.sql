@@ -1,0 +1,22 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- AlterTable
+ALTER TABLE [dbo].[book_tb] ADD CONSTRAINT [book_tb_updatedAt_df] DEFAULT CURRENT_TIMESTAMP FOR [updatedAt];
+
+-- AlterTable
+ALTER TABLE [dbo].[chapter_tb] ADD CONSTRAINT [chapter_tb_updatedAt_df] DEFAULT CURRENT_TIMESTAMP FOR [updatedAt];
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH
