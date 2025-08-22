@@ -125,6 +125,7 @@ try:
             # ถ้าซ้ำหรือเกิน max_distance
             if doc_hash in seen_docs or (max_distance is not None and dist > max_distance):
                 filtered_out_results.append((doc, dist, idx))
+                log(f"index={idx}, distance={dist:.4f} ถูกตัดออก")
                 continue
 
             # เก็บผลลัพธ์พร้อม index และ distance
@@ -211,28 +212,23 @@ try:
         index.add(embeddings)
         return index, metadata
 
-    def ask_cli():
-        log("เริ่มต้น BuddhamAI")
-        check_and_pull_models(required_models)
-        # ดึงคำถาม (argument แรกที่ไม่ใช่ flag)
+    def parse_args(argv):
         message = None
         top_k = None
         max_distance = None
 
-        # วนอ่าน argv ตั้งแต่ sys.argv[1]
-        args = sys.argv[1:]
         i = 0
-        while i < len(args):
-            arg = args[i]
-            if arg == '-k' and i + 1 < len(args):
+        while i < len(argv):
+            arg = argv[i]
+            if arg == '-k' and i + 1 < len(argv):
                 try:
-                    top_k = int(args[i+1])
+                    top_k = int(argv[i+1])
                 except ValueError:
                     top_k = None
                 i += 2
-            elif arg == '-d' and i + 1 < len(args):
+            elif arg == '-d' and i + 1 < len(argv):
                 try:
-                    max_distance = float(args[i+1])
+                    max_distance = float(argv[i+1])
                 except ValueError:
                     max_distance = None
                 i += 2
@@ -242,16 +238,25 @@ try:
             else:
                 i += 1
 
-        if message is None or message.strip() == "":
-            result = {"answer": "กรุณาถามคำถาม", "references": "ไม่มี", "duration": 0}
-            data = {"data": result}
-            json_str = json.dumps(data, ensure_ascii=False)
-            log(json_str)
-            print(json_str)
-            sys.exit(0)
+        return message, top_k, max_distance
 
-        # if top_k is None or top_k <= 0:
-        #     top_k = 3  # default
+
+    def ask_cli(argv=None):
+        log("เริ่มต้น BuddhamAI")
+        check_and_pull_models(required_models)
+
+        if argv is None:  # ถ้าไม่ส่งมา → ใช้ sys.argv
+            argv = sys.argv[1:]
+
+        message, top_k, max_distance = parse_args(argv)
+
+        if message is None or message.strip() == "":
+                result = {"answer": "กรุณาถามคำถาม", "references": "ไม่มี", "duration": 0}
+                data = {"data": result}
+                json_str = json.dumps(data, ensure_ascii=False)
+                log(json_str)
+                print(json_str)
+                return data  # ไม่ exit ตรงนี้ เพื่อให้ pool ใช้ได้
 
         index, metadata = init_bot()
         result = ask(message, index, metadata, top_k=top_k, max_distance=max_distance)
@@ -260,7 +265,7 @@ try:
         json_str = json.dumps(data, ensure_ascii=False)
         log(json_str)
         print(json_str)
-        sys.exit(0)
+        return data  # return กลับไปให้ main.py ใช้
 
     if __name__ == "__main__":
         ask_cli()
