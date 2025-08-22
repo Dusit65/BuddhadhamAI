@@ -51,10 +51,22 @@ def log_to_file(*args):
     log_message = " ".join(str(a) for a in args)
     log_file = "buddhamAI_cli.log"
     timestamp = datetime.now().strftime("%H:%M:%S %d-%m-%Y")
-    new_entry = f"[{timestamp}] {log_message}\n"
+    new_entry = f"[{timestamp}] {log_message}".encode("utf-8")  # encode เป็น bytes
 
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(new_entry)
+    if os.path.exists(log_file):
+        with open(log_file, "rb+") as f:
+            f.seek(0, os.SEEK_END)
+            size = f.tell()
+            if size > 0:
+                # ตรวจสอบ byte สุดท้าย
+                f.seek(-1, os.SEEK_END)
+                last_char = f.read(1)
+                if last_char != b"\n":
+                    f.write(b"\n")
+            f.write(new_entry)
+    else:
+        with open(log_file, "wb") as f:
+            f.write(new_entry)
 
 def format_duration(seconds: float) -> str:
     year = 365 * 24 * 3600

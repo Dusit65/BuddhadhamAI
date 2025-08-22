@@ -4,7 +4,7 @@ BEGIN TRAN;
 
 -- CreateTable
 CREATE TABLE [dbo].[user_tb] (
-    [userId] INT NOT NULL IDENTITY(1,1),
+    [userId] BIGINT NOT NULL IDENTITY(1,1),
     [userName] VARCHAR(100) NOT NULL,
     [userEmail] VARCHAR(50) NOT NULL,
     [userPassword] VARCHAR(50) NOT NULL,
@@ -14,8 +14,8 @@ CREATE TABLE [dbo].[user_tb] (
 
 -- CreateTable
 CREATE TABLE [dbo].[chat_tb] (
-    [chatId] INT NOT NULL IDENTITY(1,1),
-    [userId] INT NOT NULL,
+    [chatId] BIGINT NOT NULL IDENTITY(1,1),
+    [userId] BIGINT NOT NULL,
     [chatHeader] NVARCHAR(50) NOT NULL,
     [createAt] DATETIME2 NOT NULL CONSTRAINT [chat_tb_createAt_df] DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT [chat_tb_pkey] PRIMARY KEY CLUSTERED ([chatId])
@@ -23,8 +23,8 @@ CREATE TABLE [dbo].[chat_tb] (
 
 -- CreateTable
 CREATE TABLE [dbo].[qNa_tb] (
-    [qNaId] INT NOT NULL IDENTITY(1,1),
-    [chatId] INT NOT NULL,
+    [qNaId] BIGINT NOT NULL IDENTITY(1,1),
+    [chatId] BIGINT NOT NULL,
     [qNaWords] NVARCHAR(max) NOT NULL,
     [qNaType] CHAR(1) NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [qNa_tb_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
@@ -33,27 +33,36 @@ CREATE TABLE [dbo].[qNa_tb] (
 
 -- CreateTable
 CREATE TABLE [dbo].[book_tb] (
-    [bookId] INT NOT NULL IDENTITY(1,1),
+    [bookId] BIGINT NOT NULL IDENTITY(1,1),
     [bookName] NVARCHAR(max) NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [book_tb_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
-    [updatedAt] DATETIME2 NOT NULL,
+    [updatedAt] DATETIME2 NOT NULL CONSTRAINT [book_tb_updatedAt_df] DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT [book_tb_pkey] PRIMARY KEY CLUSTERED ([bookId])
 );
 
 -- CreateTable
 CREATE TABLE [dbo].[chapter_tb] (
-    [chapterId] INT NOT NULL IDENTITY(1,1),
-    [bookId] INT NOT NULL,
+    [chapterId] BIGINT NOT NULL IDENTITY(1,1),
+    [bookId] BIGINT NOT NULL,
     [chapterName] NVARCHAR(50) NOT NULL,
     [chapterText] NVARCHAR(max) NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [chapter_tb_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
-    [updatedAt] DATETIME2 NOT NULL,
+    [updatedAt] DATETIME2 NOT NULL CONSTRAINT [chapter_tb_updatedAt_df] DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT [chapter_tb_pkey] PRIMARY KEY CLUSTERED ([chapterId])
 );
 
 -- CreateTable
+CREATE TABLE [dbo].[embeddings_tb] (
+    [id] BIGINT NOT NULL IDENTITY(1,1),
+    [embeddings] VARBINARY(max) NOT NULL,
+    [metadata] VARBINARY(max) NOT NULL,
+    [updatedAt] DATETIME2 NOT NULL CONSTRAINT [embeddings_tb_updatedAt_df] DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT [embeddings_tb_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
+-- CreateTable
 CREATE TABLE [dbo].[log_tb] (
-    [id] INT NOT NULL IDENTITY(1,1),
+    [id] BIGINT NOT NULL IDENTITY(1,1),
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [log_tb_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [message] NVARCHAR(max) NOT NULL,
     CONSTRAINT [log_tb_pkey] PRIMARY KEY CLUSTERED ([id])

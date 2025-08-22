@@ -1,4 +1,4 @@
-from sqlalchemy import NVARCHAR, Column, Integer, String, DateTime
+from sqlalchemy import NVARCHAR, Column, Integer, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
 

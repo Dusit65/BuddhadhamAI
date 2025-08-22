@@ -46,36 +46,42 @@ def load_embeddings_and_metadata():
     return embeddings, docs
 
 def ensure_embeddings_up_to_date():
+    """
+    ตรวจสอบว่า embeddings/metadata ล่าสุด
+    - ถ้า outdated หรือไฟล์ไม่มี → regenerate ใหม่และบันทึกลง DB + ไฟล์
+    - ถ้าไฟล์ล่าสุด → โหลดจากไฟล์
+    """
     last_update_db = get_last_update_time()
     last_embed_time = load_last_embed_time()
 
-    # ไม่มีไฟล์ -> ลองโหลดจาก DB
-    if not os.path.exists(EMB_PATH) or not os.path.exists(META_PATH):
-        log("ไฟล์ embeddings/metadata ไม่พบ ลองโหลดจาก DB...")
-        emb, docs = load_embeddings_from_db()
-        if emb is not None and docs is not None:
-            log("โหลด embeddings/metadata จาก DB สำเร็จ")
-            np.save(EMB_PATH, emb)
-            with open(META_PATH, "wb") as f:
-                pickle.dump(docs, f)
-            return emb, docs
-        log("DB ก็ไม่มี → regenerate ใหม่")
+    # ถ้า outdated หรือไฟล์ไม่มี
+    outdated_or_missing = (
+        last_embed_time is None or 
+        last_embed_time < last_update_db or 
+        not os.path.exists(EMB_PATH) or 
+        not os.path.exists(META_PATH)
+    )
+
+    if outdated_or_missing:
+        log("embeddings/metadata outdated หรือไฟล์ไม่พบ → regenerate ใหม่")
+
+        # สร้าง embeddings ใหม่จาก DB
         documents = fetch_documents()
         create_and_save_embeddings_and_metadata(documents)
-        save_embeddings_to_db(np.load(EMB_PATH), documents)
-        save_last_embed_time(last_update_db)
-        return np.load(EMB_PATH), documents
 
-    # ถ้า outdated
-    if last_embed_time is None or last_embed_time < last_update_db:
-        log("embeddings/metadata outdated → regenerate ใหม่")
-        documents = fetch_documents()
-        create_and_save_embeddings_and_metadata(documents)
-        save_embeddings_to_db(np.load(EMB_PATH), documents)
-        save_last_embed_time(last_update_db)
-        return np.load(EMB_PATH), documents
+        # โหลด embeddings ที่สร้างใหม่
+        embeddings = np.load(EMB_PATH)
 
-    # โหลดจากไฟล์
+        # บันทึกลง DB
+        save_embeddings_to_db(embeddings, documents)
+        save_last_embed_time(last_update_db)
+
+        # อัปเดตเวลา
+        save_last_embed_time(last_update_db)
+
+        return embeddings, documents
+
+    # โหลดจากไฟล์ (up-to-date)
     embeddings, documents = load_embeddings_and_metadata()
     log("โหลด embeddings/metadata จากไฟล์สำเร็จ")
     return embeddings, documents

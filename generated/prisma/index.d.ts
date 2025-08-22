@@ -6366,26 +6366,23 @@ export namespace Prisma {
 
   export type Embeddings_tbMinAggregateOutputType = {
     id: bigint | null
-    createdAt: Date | null
-    updatedAt: Date | null
     embeddings: Uint8Array | null
     metadata: Uint8Array | null
+    updatedAt: Date | null
   }
 
   export type Embeddings_tbMaxAggregateOutputType = {
     id: bigint | null
-    createdAt: Date | null
-    updatedAt: Date | null
     embeddings: Uint8Array | null
     metadata: Uint8Array | null
+    updatedAt: Date | null
   }
 
   export type Embeddings_tbCountAggregateOutputType = {
     id: number
-    createdAt: number
-    updatedAt: number
     embeddings: number
     metadata: number
+    updatedAt: number
     _all: number
   }
 
@@ -6400,26 +6397,23 @@ export namespace Prisma {
 
   export type Embeddings_tbMinAggregateInputType = {
     id?: true
-    createdAt?: true
-    updatedAt?: true
     embeddings?: true
     metadata?: true
+    updatedAt?: true
   }
 
   export type Embeddings_tbMaxAggregateInputType = {
     id?: true
-    createdAt?: true
-    updatedAt?: true
     embeddings?: true
     metadata?: true
+    updatedAt?: true
   }
 
   export type Embeddings_tbCountAggregateInputType = {
     id?: true
-    createdAt?: true
-    updatedAt?: true
     embeddings?: true
     metadata?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -6511,10 +6505,9 @@ export namespace Prisma {
 
   export type Embeddings_tbGroupByOutputType = {
     id: bigint
-    createdAt: Date
-    updatedAt: Date
     embeddings: Uint8Array
     metadata: Uint8Array
+    updatedAt: Date
     _count: Embeddings_tbCountAggregateOutputType | null
     _avg: Embeddings_tbAvgAggregateOutputType | null
     _sum: Embeddings_tbSumAggregateOutputType | null
@@ -6538,33 +6531,30 @@ export namespace Prisma {
 
   export type embeddings_tbSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     embeddings?: boolean
     metadata?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["embeddings_tb"]>
 
 
 
   export type embeddings_tbSelectScalar = {
     id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     embeddings?: boolean
     metadata?: boolean
+    updatedAt?: boolean
   }
 
-  export type embeddings_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "embeddings" | "metadata", ExtArgs["result"]["embeddings_tb"]>
+  export type embeddings_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "embeddings" | "metadata" | "updatedAt", ExtArgs["result"]["embeddings_tb"]>
 
   export type $embeddings_tbPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "embeddings_tb"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
-      createdAt: Date
-      updatedAt: Date
       embeddings: Uint8Array
       metadata: Uint8Array
+      updatedAt: Date
     }, ExtArgs["result"]["embeddings_tb"]>
     composites: {}
   }
@@ -6935,10 +6925,9 @@ export namespace Prisma {
    */ 
   interface embeddings_tbFieldRefs {
     readonly id: FieldRef<"embeddings_tb", 'BigInt'>
-    readonly createdAt: FieldRef<"embeddings_tb", 'DateTime'>
-    readonly updatedAt: FieldRef<"embeddings_tb", 'DateTime'>
     readonly embeddings: FieldRef<"embeddings_tb", 'Bytes'>
     readonly metadata: FieldRef<"embeddings_tb", 'Bytes'>
+    readonly updatedAt: FieldRef<"embeddings_tb", 'DateTime'>
   }
     
 
@@ -8223,10 +8212,9 @@ export namespace Prisma {
 
   export const Embeddings_tbScalarFieldEnum: {
     id: 'id',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
     embeddings: 'embeddings',
-    metadata: 'metadata'
+    metadata: 'metadata',
+    updatedAt: 'updatedAt'
   };
 
   export type Embeddings_tbScalarFieldEnum = (typeof Embeddings_tbScalarFieldEnum)[keyof typeof Embeddings_tbScalarFieldEnum]
@@ -8587,18 +8575,16 @@ export namespace Prisma {
     OR?: embeddings_tbWhereInput[]
     NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
     id?: BigIntFilter<"embeddings_tb"> | bigint | number
-    createdAt?: DateTimeFilter<"embeddings_tb"> | Date | string
-    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
     embeddings?: BytesFilter<"embeddings_tb"> | Uint8Array
     metadata?: BytesFilter<"embeddings_tb"> | Uint8Array
+    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
   }
 
   export type embeddings_tbOrderByWithRelationInput = {
     id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     embeddings?: SortOrder
     metadata?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type embeddings_tbWhereUniqueInput = Prisma.AtLeast<{
@@ -8606,18 +8592,16 @@ export namespace Prisma {
     AND?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
     OR?: embeddings_tbWhereInput[]
     NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
-    createdAt?: DateTimeFilter<"embeddings_tb"> | Date | string
-    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
     embeddings?: BytesFilter<"embeddings_tb"> | Uint8Array
     metadata?: BytesFilter<"embeddings_tb"> | Uint8Array
+    updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
   }, "id">
 
   export type embeddings_tbOrderByWithAggregationInput = {
     id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     embeddings?: SortOrder
     metadata?: SortOrder
+    updatedAt?: SortOrder
     _count?: embeddings_tbCountOrderByAggregateInput
     _avg?: embeddings_tbAvgOrderByAggregateInput
     _max?: embeddings_tbMaxOrderByAggregateInput
@@ -8630,10 +8614,9 @@ export namespace Prisma {
     OR?: embeddings_tbScalarWhereWithAggregatesInput[]
     NOT?: embeddings_tbScalarWhereWithAggregatesInput | embeddings_tbScalarWhereWithAggregatesInput[]
     id?: BigIntWithAggregatesFilter<"embeddings_tb"> | bigint | number
-    createdAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
     embeddings?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
     metadata?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
+    updatedAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
   }
 
   export type log_tbWhereInput = {
@@ -8959,57 +8942,50 @@ export namespace Prisma {
 
   export type embeddings_tbCreateInput = {
     id?: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
     embeddings: Uint8Array
     metadata: Uint8Array
+    updatedAt?: Date | string
   }
 
   export type embeddings_tbUncheckedCreateInput = {
     id?: bigint | number
-    createdAt?: Date | string
-    updatedAt?: Date | string
     embeddings: Uint8Array
     metadata: Uint8Array
+    updatedAt?: Date | string
   }
 
   export type embeddings_tbUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type embeddings_tbUncheckedUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type embeddings_tbCreateManyInput = {
-    createdAt?: Date | string
-    updatedAt?: Date | string
     embeddings: Uint8Array
     metadata: Uint8Array
+    updatedAt?: Date | string
   }
 
   export type embeddings_tbUpdateManyMutationInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type embeddings_tbUncheckedUpdateManyInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type log_tbCreateInput = {
@@ -9353,10 +9329,9 @@ export namespace Prisma {
 
   export type embeddings_tbCountOrderByAggregateInput = {
     id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     embeddings?: SortOrder
     metadata?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type embeddings_tbAvgOrderByAggregateInput = {
@@ -9365,18 +9340,16 @@ export namespace Prisma {
 
   export type embeddings_tbMaxOrderByAggregateInput = {
     id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     embeddings?: SortOrder
     metadata?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type embeddings_tbMinOrderByAggregateInput = {
     id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     embeddings?: SortOrder
     metadata?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type embeddings_tbSumOrderByAggregateInput = {

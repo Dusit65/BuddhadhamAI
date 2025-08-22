@@ -10,9 +10,8 @@ import numpy as np
 import faiss
 import ollama
 import hashlib
-from reDocuments import create_and_save_embeddings_and_metadata, save_last_embed_time, ensure_embeddings_up_to_date
+from reDocuments import ensure_embeddings_up_to_date
 from debugger import format_duration, log
-from db_handler import fetch_documents, get_last_update_time
 
 try:
     def clear_screen():
@@ -102,9 +101,11 @@ try:
     def search(query, index, metadata, top_k, max_distance):
         log(f"กำลังค้นหาข้อมูลอ้างอิงสำหรับ: {query} ด้วย top_k={top_k} และ max_distance={max_distance}")
 
+        # สร้าง embedding ของ query
         q_emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']
         q_emb = np.array([q_emb], dtype='float32')
 
+        # ค้นหา nearest neighbors
         distances, ids = index.search(q_emb, top_k)
         log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
 
@@ -123,21 +124,29 @@ try:
 
             # ถ้าซ้ำหรือเกิน max_distance
             if doc_hash in seen_docs or (max_distance is not None and dist > max_distance):
-                filtered_out_results.append((doc, dist))
+                filtered_out_results.append((doc, dist, idx))
                 continue
 
-            results.append((doc, dist))
+            # เก็บผลลัพธ์พร้อม index และ distance
+            results.append({
+                "doc": doc,
+                "distance": dist,
+                "index": idx
+            })
             seen_docs.add(doc_hash)
 
-        log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([doc for doc, _ in results])}")
+            # log index และ distance ของแต่ละรายการ
+            log(f"index={idx}, distance={dist:.4f}")
+
+        log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([r['doc'] for r in results])}")
+
         if filtered_out_results:
-            contexts = [f"{doc['content']}" for doc, _ in filtered_out_results]
+            contexts = [f"{doc['content']}" for doc, _, _ in filtered_out_results]
             full_context = "\n".join(contexts)
-            log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _ in filtered_out_results])}")
+            log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _, _ in filtered_out_results])}")
             log(f"ข้อมูลอ้างอิงที่ถูกตัดออก:\n{full_context}")
 
         return results
-
     def short_references(metadata):
         sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapter']))
         return ", ".join([
@@ -156,10 +165,8 @@ try:
         global start
         results = search(query, index, metadata, top_k, max_distance=max_distance)
 
-        contexts = [
-            f"{doc['content']}"
-            for doc, _ in results
-        ]
+        contexts = [r["doc"]["content"] for r in results]
+        
         full_context = "\n".join(contexts)
         prompt = f"""ข้อมูลอ้างอิง:\n{full_context}\nคำถาม: {query}"""
         model = 'gpt-oss:20b'
@@ -173,7 +180,7 @@ try:
             ]
         )
         answer = response['message']['content']
-        ref_text = short_references([doc for doc, _ in results])
+        ref_text = short_references([r["doc"] for r in results])
         end = time.perf_counter()
         processing_time = format_duration(end - start)
         log(f"ถามโมเดล \"{model}\" เสร็จสิ้น ใช้เวลา {processing_time}")

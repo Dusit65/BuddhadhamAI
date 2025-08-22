@@ -1,4 +1,4 @@
-#db_handler.py
+# db_handler.py
 import os
 import pickle
 import numpy as np
@@ -40,6 +40,7 @@ def fetch_documents():
     return docs
 
 def get_last_update_time():
+    """ดึงเวลาล่าสุดของ book_tb และ chapter_tb"""
     log("ดึงเวลาล่าสุดของ book_tb และ chapter_tb")
     engine = get_engine()
     with engine.connect() as conn:
@@ -50,26 +51,40 @@ def get_last_update_time():
     return str(last_update)
 
 def save_embeddings_to_db(embeddings, docs):
-    """บันทึก embeddings และ metadata ลง DB"""
+    """บันทึก embeddings และ metadata ลง DB (dynamic dimension, no timestamp)"""
     engine = get_engine()
+    
+    # เก็บ dimension ของ embeddings ไว้ใน metadata
+    docs_with_dim = []
+    for doc in docs:
+        new_doc = dict(doc) if isinstance(doc, dict) else {"content": doc}
+        new_doc["dim"] = embeddings.shape[1] if embeddings.ndim > 1 else embeddings.size
+        docs_with_dim.append(new_doc)
+    
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM embeddings_tb"))  # เก็บล่าสุดแค่ชุดเดียว
         conn.execute(
             text("INSERT INTO embeddings_tb (embeddings, metadata) VALUES (:emb, :meta)"),
             {
                 "emb": embeddings.tobytes(),
-                "meta": pickle.dumps(docs)
+                "meta": pickle.dumps(docs_with_dim)
             }
         )
-    log("บันทึก embeddings/metadata ลง DB แล้ว")
+    log("บันทึก embeddings/metadata ลง DB สำเร็จ")
 
 def load_embeddings_from_db():
-    """โหลด embeddings และ metadata จาก DB"""
+    """โหลด embeddings และ metadata จาก DB (dynamic dimension)"""
     engine = get_engine()
     with engine.connect() as conn:
         row = conn.execute(text("SELECT TOP 1 embeddings, metadata FROM embeddings_tb ORDER BY id DESC")).first()
         if not row:
             return None, None
-        embeddings = np.frombuffer(row.embeddings, dtype="float32").reshape(-1, len(pickle.loads(row.metadata)[0].get("content", "")))
+        
         docs = pickle.loads(row.metadata)
+        # อ่าน dimension จาก metadata ของ doc แรก
+        dim = docs[0]["dim"] if isinstance(docs, list) and "dim" in docs[0] else None
+        if dim is None:
+            raise ValueError("ไม่พบ dimension ของ embeddings ใน metadata")
+        
+        embeddings = np.frombuffer(row.embeddings, dtype="float32").reshape(-1, dim)
         return embeddings, docs

@@ -59,10 +59,9 @@ model chapter_tb {
 
 model embeddings_tb {
   id         BigInt   @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
   embeddings Bytes // เก็บ numpy array เป็น binary
   metadata   Bytes // เก็บ pickle docs
+  updatedAt  DateTime @default(now())
 }
 
 model log_tb {
