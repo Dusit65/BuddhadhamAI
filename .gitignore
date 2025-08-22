@@ -1,6 +1,5 @@
 /.dist
 /node_modules
-/migrations
 .env
 embeddings.npy
 metadata.pkl
