@@ -9,7 +9,7 @@ datasource db {
 }
 
 model user_tb {
-  userId       BigInt       @id @default(autoincrement())
+  userId       Int       @id @default(autoincrement())
   userName     String    @db.VarChar(100)
   userEmail    String    @db.VarChar(50)
   userPassword String    @db.VarChar(50)
@@ -19,8 +19,8 @@ model user_tb {
 }
 
 model chat_tb {
-  chatId      BigInt       @id @default(autoincrement())
-  userId      BigInt
+  chatId      Int       @id @default(autoincrement())
+  userId      Int
   chatHeader  String    @db.NVarChar(50)
   createAt    DateTime  @default(now())
 
@@ -29,8 +29,8 @@ model chat_tb {
 }
 
 model qNa_tb {
-  qNaId     BigInt       @id @default(autoincrement())
-  chatId    BigInt
+  qNaId     Int       @id @default(autoincrement())
+  chatId    Int
   qNaWords  String    @db.NVarChar(MAX)
   qNaType   String    @db.Char(1)
   createdAt DateTime  @default(now())
@@ -39,7 +39,7 @@ model qNa_tb {
 }
 
 model book_tb {
-  bookId    BigInt           @id @default(autoincrement())
+  bookId    Int           @id @default(autoincrement())
   bookName  String        @db.NVarChar(MAX)
   chapters  chapter_tb[]
   createdAt DateTime      @default(now())
@@ -47,8 +47,8 @@ model book_tb {
 }
 
 model chapter_tb {
-  chapterId   BigInt        @id @default(autoincrement())
-  bookId      BigInt
+  chapterId   Int        @id @default(autoincrement())
+  bookId      Int
   chapterName String     @db.NVarChar(50)
   chapterText String     @db.NVarChar(MAX)
   createdAt   DateTime   @default(now())
@@ -58,14 +58,14 @@ model chapter_tb {
 }
 
 model embeddings_tb {
-  id          BigInt      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   embeddings  Bytes    // เก็บ numpy array เป็น binary
   metadata    Bytes    // เก็บ pickle docs
   updatedAt   DateTime @default(now())
 }
 
 model log_tb {
-  id        BigInt      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   message   String   @db.NVarChar(MAX)
 }

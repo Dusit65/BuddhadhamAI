@@ -1,6 +1,7 @@
 .env
 ```
 PORT = 0000
+processes = 1
 DATABASE_URL = "sqlserver://127.0.0.1:0000;initial catalog=DBName;user=Username;password=passw0rd;trustServerCertificate=true;charset=utf8mb4"
 conn_str= "mssql+pyodbc://Username:passw0rd@127.0.0.1:0000/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
 DB_SERVER = "127.0.0.1"

@@ -19,18 +19,18 @@ exports.ask = async (req, res) => {
     });
 
     const data = response.data;
-
+    console.log("Response from main.py:", data.data.answer);
     // บันทึก Q/A ลง database
-    const savedRecordQuestion = await prisma.qNa_tb.create({
+    const savedQuestion = await prisma.qNa_tb.create({
       data: { chatId, qNaWords: question, qNaType: "Q" },
     });
-    const savedRecordAnswer = await prisma.qNa_tb.create({
+    const savedAnswer = await prisma.qNa_tb.create({
       data: { chatId, qNaWords: data.data.answer, qNaType: "A" },
     });
 
     return res.status(201).json({
       message: "Question and Answer saved successfully",
-      data: { savedRecordQuestion, savedRecordAnswer },
+      data: { savedQuestion, savedAnswer },
       answer: data.data.answer,
       references: data.data.references,
       rejected: data.data.rejected,

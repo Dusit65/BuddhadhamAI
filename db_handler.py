@@ -66,7 +66,7 @@ def save_embeddings_to_db(embeddings, docs):
         conn.execute(
             text("INSERT INTO embeddings_tb (embeddings, metadata) VALUES (:emb, :meta)"),
             {
-                "emb": embeddings.tobytes(),
+                "emb": embeddings.astype("float32").tobytes(),
                 "meta": pickle.dumps(docs_with_dim)
             }
         )
@@ -75,8 +75,16 @@ def save_embeddings_to_db(embeddings, docs):
 def load_embeddings_from_db():
     """โหลด embeddings และ metadata จาก DB (dynamic dimension)"""
     engine = get_engine()
+    dialect = engine.dialect.name.lower()
+
+    # SQL แยกตาม DB
+    if dialect == "mysql":
+        sql = "SELECT embeddings, metadata FROM embeddings_tb ORDER BY id DESC LIMIT 1"
+    else:  # สมมติใช้ SQL Server
+        sql = "SELECT TOP 1 embeddings, metadata FROM embeddings_tb ORDER BY id DESC"
+
     with engine.connect() as conn:
-        row = conn.execute(text("SELECT TOP 1 embeddings, metadata FROM embeddings_tb ORDER BY id DESC")).first()
+        row = conn.execute(text(sql)).first()
         if not row:
             return None, None
         
