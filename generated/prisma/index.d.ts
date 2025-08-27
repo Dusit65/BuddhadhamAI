@@ -1463,7 +1463,7 @@ export namespace Prisma {
     userName: string | null
     userEmail: string | null
     userPassword: string | null
-    createAt: Date | null
+    createdAt: Date | null
   }
 
   export type User_tbMaxAggregateOutputType = {
@@ -1471,7 +1471,7 @@ export namespace Prisma {
     userName: string | null
     userEmail: string | null
     userPassword: string | null
-    createAt: Date | null
+    createdAt: Date | null
   }
 
   export type User_tbCountAggregateOutputType = {
@@ -1479,7 +1479,7 @@ export namespace Prisma {
     userName: number
     userEmail: number
     userPassword: number
-    createAt: number
+    createdAt: number
     _all: number
   }
 
@@ -1497,7 +1497,7 @@ export namespace Prisma {
     userName?: true
     userEmail?: true
     userPassword?: true
-    createAt?: true
+    createdAt?: true
   }
 
   export type User_tbMaxAggregateInputType = {
@@ -1505,7 +1505,7 @@ export namespace Prisma {
     userName?: true
     userEmail?: true
     userPassword?: true
-    createAt?: true
+    createdAt?: true
   }
 
   export type User_tbCountAggregateInputType = {
@@ -1513,7 +1513,7 @@ export namespace Prisma {
     userName?: true
     userEmail?: true
     userPassword?: true
-    createAt?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -1608,7 +1608,7 @@ export namespace Prisma {
     userName: string
     userEmail: string
     userPassword: string
-    createAt: Date
+    createdAt: Date
     _count: User_tbCountAggregateOutputType | null
     _avg: User_tbAvgAggregateOutputType | null
     _sum: User_tbSumAggregateOutputType | null
@@ -1635,7 +1635,7 @@ export namespace Prisma {
     userName?: boolean
     userEmail?: boolean
     userPassword?: boolean
-    createAt?: boolean
+    createdAt?: boolean
     chats?: boolean | user_tb$chatsArgs<ExtArgs>
     _count?: boolean | User_tbCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user_tb"]>
@@ -1647,10 +1647,10 @@ export namespace Prisma {
     userName?: boolean
     userEmail?: boolean
     userPassword?: boolean
-    createAt?: boolean
+    createdAt?: boolean
   }
 
-  export type user_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "userName" | "userEmail" | "userPassword" | "createAt", ExtArgs["result"]["user_tb"]>
+  export type user_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "userName" | "userEmail" | "userPassword" | "createdAt", ExtArgs["result"]["user_tb"]>
   export type user_tbInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chats?: boolean | user_tb$chatsArgs<ExtArgs>
     _count?: boolean | User_tbCountOutputTypeDefaultArgs<ExtArgs>
@@ -1666,7 +1666,7 @@ export namespace Prisma {
       userName: string
       userEmail: string
       userPassword: string
-      createAt: Date
+      createdAt: Date
     }, ExtArgs["result"]["user_tb"]>
     composites: {}
   }
@@ -2041,7 +2041,7 @@ export namespace Prisma {
     readonly userName: FieldRef<"user_tb", 'String'>
     readonly userEmail: FieldRef<"user_tb", 'String'>
     readonly userPassword: FieldRef<"user_tb", 'String'>
-    readonly createAt: FieldRef<"user_tb", 'DateTime'>
+    readonly createdAt: FieldRef<"user_tb", 'DateTime'>
   }
     
 
@@ -2452,21 +2452,21 @@ export namespace Prisma {
     chatId: number | null
     userId: number | null
     chatHeader: string | null
-    createAt: Date | null
+    createdAt: Date | null
   }
 
   export type Chat_tbMaxAggregateOutputType = {
     chatId: number | null
     userId: number | null
     chatHeader: string | null
-    createAt: Date | null
+    createdAt: Date | null
   }
 
   export type Chat_tbCountAggregateOutputType = {
     chatId: number
     userId: number
     chatHeader: number
-    createAt: number
+    createdAt: number
     _all: number
   }
 
@@ -2485,21 +2485,21 @@ export namespace Prisma {
     chatId?: true
     userId?: true
     chatHeader?: true
-    createAt?: true
+    createdAt?: true
   }
 
   export type Chat_tbMaxAggregateInputType = {
     chatId?: true
     userId?: true
     chatHeader?: true
-    createAt?: true
+    createdAt?: true
   }
 
   export type Chat_tbCountAggregateInputType = {
     chatId?: true
     userId?: true
     chatHeader?: true
-    createAt?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -2593,7 +2593,7 @@ export namespace Prisma {
     chatId: number
     userId: number
     chatHeader: string
-    createAt: Date
+    createdAt: Date
     _count: Chat_tbCountAggregateOutputType | null
     _avg: Chat_tbAvgAggregateOutputType | null
     _sum: Chat_tbSumAggregateOutputType | null
@@ -2619,7 +2619,7 @@ export namespace Prisma {
     chatId?: boolean
     userId?: boolean
     chatHeader?: boolean
-    createAt?: boolean
+    createdAt?: boolean
     user?: boolean | user_tbDefaultArgs<ExtArgs>
     qnas?: boolean | chat_tb$qnasArgs<ExtArgs>
     _count?: boolean | Chat_tbCountOutputTypeDefaultArgs<ExtArgs>
@@ -2631,10 +2631,10 @@ export namespace Prisma {
     chatId?: boolean
     userId?: boolean
     chatHeader?: boolean
-    createAt?: boolean
+    createdAt?: boolean
   }
 
-  export type chat_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"chatId" | "userId" | "chatHeader" | "createAt", ExtArgs["result"]["chat_tb"]>
+  export type chat_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"chatId" | "userId" | "chatHeader" | "createdAt", ExtArgs["result"]["chat_tb"]>
   export type chat_tbInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | user_tbDefaultArgs<ExtArgs>
     qnas?: boolean | chat_tb$qnasArgs<ExtArgs>
@@ -2651,7 +2651,7 @@ export namespace Prisma {
       chatId: number
       userId: number
       chatHeader: string
-      createAt: Date
+      createdAt: Date
     }, ExtArgs["result"]["chat_tb"]>
     composites: {}
   }
@@ -3026,7 +3026,7 @@ export namespace Prisma {
     readonly chatId: FieldRef<"chat_tb", 'Int'>
     readonly userId: FieldRef<"chat_tb", 'Int'>
     readonly chatHeader: FieldRef<"chat_tb", 'String'>
-    readonly createAt: FieldRef<"chat_tb", 'DateTime'>
+    readonly createdAt: FieldRef<"chat_tb", 'DateTime'>
   }
     
 
@@ -8159,7 +8159,7 @@ export namespace Prisma {
     userName: 'userName',
     userEmail: 'userEmail',
     userPassword: 'userPassword',
-    createAt: 'createAt'
+    createdAt: 'createdAt'
   };
 
   export type User_tbScalarFieldEnum = (typeof User_tbScalarFieldEnum)[keyof typeof User_tbScalarFieldEnum]
@@ -8169,7 +8169,7 @@ export namespace Prisma {
     chatId: 'chatId',
     userId: 'userId',
     chatHeader: 'chatHeader',
-    createAt: 'createAt'
+    createdAt: 'createdAt'
   };
 
   export type Chat_tbScalarFieldEnum = (typeof Chat_tbScalarFieldEnum)[keyof typeof Chat_tbScalarFieldEnum]
@@ -8287,7 +8287,7 @@ export namespace Prisma {
     userName?: StringFilter<"user_tb"> | string
     userEmail?: StringFilter<"user_tb"> | string
     userPassword?: StringFilter<"user_tb"> | string
-    createAt?: DateTimeFilter<"user_tb"> | Date | string
+    createdAt?: DateTimeFilter<"user_tb"> | Date | string
     chats?: Chat_tbListRelationFilter
   }
 
@@ -8296,7 +8296,7 @@ export namespace Prisma {
     userName?: SortOrder
     userEmail?: SortOrder
     userPassword?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
     chats?: chat_tbOrderByRelationAggregateInput
   }
 
@@ -8308,7 +8308,7 @@ export namespace Prisma {
     userName?: StringFilter<"user_tb"> | string
     userEmail?: StringFilter<"user_tb"> | string
     userPassword?: StringFilter<"user_tb"> | string
-    createAt?: DateTimeFilter<"user_tb"> | Date | string
+    createdAt?: DateTimeFilter<"user_tb"> | Date | string
     chats?: Chat_tbListRelationFilter
   }, "userId">
 
@@ -8317,7 +8317,7 @@ export namespace Prisma {
     userName?: SortOrder
     userEmail?: SortOrder
     userPassword?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
     _count?: user_tbCountOrderByAggregateInput
     _avg?: user_tbAvgOrderByAggregateInput
     _max?: user_tbMaxOrderByAggregateInput
@@ -8333,7 +8333,7 @@ export namespace Prisma {
     userName?: StringWithAggregatesFilter<"user_tb"> | string
     userEmail?: StringWithAggregatesFilter<"user_tb"> | string
     userPassword?: StringWithAggregatesFilter<"user_tb"> | string
-    createAt?: DateTimeWithAggregatesFilter<"user_tb"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"user_tb"> | Date | string
   }
 
   export type chat_tbWhereInput = {
@@ -8343,7 +8343,7 @@ export namespace Prisma {
     chatId?: IntFilter<"chat_tb"> | number
     userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
-    createAt?: DateTimeFilter<"chat_tb"> | Date | string
+    createdAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
     qnas?: QNa_tbListRelationFilter
   }
@@ -8352,7 +8352,7 @@ export namespace Prisma {
     chatId?: SortOrder
     userId?: SortOrder
     chatHeader?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
     user?: user_tbOrderByWithRelationInput
     qnas?: qNa_tbOrderByRelationAggregateInput
   }
@@ -8364,7 +8364,7 @@ export namespace Prisma {
     NOT?: chat_tbWhereInput | chat_tbWhereInput[]
     userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
-    createAt?: DateTimeFilter<"chat_tb"> | Date | string
+    createdAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
     qnas?: QNa_tbListRelationFilter
   }, "chatId">
@@ -8373,7 +8373,7 @@ export namespace Prisma {
     chatId?: SortOrder
     userId?: SortOrder
     chatHeader?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
     _count?: chat_tbCountOrderByAggregateInput
     _avg?: chat_tbAvgOrderByAggregateInput
     _max?: chat_tbMaxOrderByAggregateInput
@@ -8388,7 +8388,7 @@ export namespace Prisma {
     chatId?: IntWithAggregatesFilter<"chat_tb"> | number
     userId?: IntWithAggregatesFilter<"chat_tb"> | number
     chatHeader?: StringWithAggregatesFilter<"chat_tb"> | string
-    createAt?: DateTimeWithAggregatesFilter<"chat_tb"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"chat_tb"> | Date | string
   }
 
   export type qNa_tbWhereInput = {
@@ -8664,7 +8664,7 @@ export namespace Prisma {
     userName: string
     userEmail: string
     userPassword: string
-    createAt?: Date | string
+    createdAt?: Date | string
     chats?: chat_tbCreateNestedManyWithoutUserInput
   }
 
@@ -8673,7 +8673,7 @@ export namespace Prisma {
     userName: string
     userEmail: string
     userPassword: string
-    createAt?: Date | string
+    createdAt?: Date | string
     chats?: chat_tbUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -8681,7 +8681,7 @@ export namespace Prisma {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chats?: chat_tbUpdateManyWithoutUserNestedInput
   }
 
@@ -8690,7 +8690,7 @@ export namespace Prisma {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chats?: chat_tbUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -8698,14 +8698,14 @@ export namespace Prisma {
     userName: string
     userEmail: string
     userPassword: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type user_tbUpdateManyMutationInput = {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type user_tbUncheckedUpdateManyInput = {
@@ -8713,12 +8713,12 @@ export namespace Prisma {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chat_tbCreateInput = {
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
     qnas?: qNa_tbCreateNestedManyWithoutChatInput
   }
@@ -8727,13 +8727,13 @@ export namespace Prisma {
     chatId?: number
     userId: number
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUpdateInput = {
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
     qnas?: qNa_tbUpdateManyWithoutChatNestedInput
   }
@@ -8742,26 +8742,26 @@ export namespace Prisma {
     chatId?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbCreateManyInput = {
     userId: number
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type chat_tbUpdateManyMutationInput = {
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chat_tbUncheckedUpdateManyInput = {
     chatId?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateInput = {
@@ -9063,7 +9063,7 @@ export namespace Prisma {
     userName?: SortOrder
     userEmail?: SortOrder
     userPassword?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type user_tbAvgOrderByAggregateInput = {
@@ -9075,7 +9075,7 @@ export namespace Prisma {
     userName?: SortOrder
     userEmail?: SortOrder
     userPassword?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type user_tbMinOrderByAggregateInput = {
@@ -9083,7 +9083,7 @@ export namespace Prisma {
     userName?: SortOrder
     userEmail?: SortOrder
     userPassword?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type user_tbSumOrderByAggregateInput = {
@@ -9156,7 +9156,7 @@ export namespace Prisma {
     chatId?: SortOrder
     userId?: SortOrder
     chatHeader?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type chat_tbAvgOrderByAggregateInput = {
@@ -9168,14 +9168,14 @@ export namespace Prisma {
     chatId?: SortOrder
     userId?: SortOrder
     chatHeader?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type chat_tbMinOrderByAggregateInput = {
     chatId?: SortOrder
     userId?: SortOrder
     chatHeader?: SortOrder
-    createAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type chat_tbSumOrderByAggregateInput = {
@@ -9679,14 +9679,14 @@ export namespace Prisma {
 
   export type chat_tbCreateWithoutUserInput = {
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
     qnas?: qNa_tbCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUncheckedCreateWithoutUserInput = {
     chatId?: number
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
   }
 
@@ -9722,14 +9722,14 @@ export namespace Prisma {
     chatId?: IntFilter<"chat_tb"> | number
     userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
-    createAt?: DateTimeFilter<"chat_tb"> | Date | string
+    createdAt?: DateTimeFilter<"chat_tb"> | Date | string
   }
 
   export type user_tbCreateWithoutChatsInput = {
     userName: string
     userEmail: string
     userPassword: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type user_tbUncheckedCreateWithoutChatsInput = {
@@ -9737,7 +9737,7 @@ export namespace Prisma {
     userName: string
     userEmail: string
     userPassword: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type user_tbCreateOrConnectWithoutChatsInput = {
@@ -9784,7 +9784,7 @@ export namespace Prisma {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type user_tbUncheckedUpdateWithoutChatsInput = {
@@ -9792,7 +9792,7 @@ export namespace Prisma {
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUpsertWithWhereUniqueWithoutChatInput = {
@@ -9825,7 +9825,7 @@ export namespace Prisma {
 
   export type chat_tbCreateWithoutQnasInput = {
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
   }
 
@@ -9833,7 +9833,7 @@ export namespace Prisma {
     chatId?: number
     userId: number
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type chat_tbCreateOrConnectWithoutQnasInput = {
@@ -9854,7 +9854,7 @@ export namespace Prisma {
 
   export type chat_tbUpdateWithoutQnasInput = {
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
   }
 
@@ -9862,7 +9862,7 @@ export namespace Prisma {
     chatId?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chapter_tbCreateWithoutBookInput = {
@@ -9961,26 +9961,26 @@ export namespace Prisma {
 
   export type chat_tbCreateManyUserInput = {
     chatHeader: string
-    createAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type chat_tbUpdateWithoutUserInput = {
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateWithoutUserInput = {
     chatId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateManyWithoutUserInput = {
     chatId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
-    createAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateManyChatInput = {

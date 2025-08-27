@@ -126,14 +126,14 @@ exports.Prisma.User_tbScalarFieldEnum = {
   userName: 'userName',
   userEmail: 'userEmail',
   userPassword: 'userPassword',
-  createAt: 'createAt'
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.Chat_tbScalarFieldEnum = {
   chatId: 'chatId',
   userId: 'userId',
   chatHeader: 'chatHeader',
-  createAt: 'createAt'
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.QNa_tbScalarFieldEnum = {
