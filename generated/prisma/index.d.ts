@@ -65,7 +65,7 @@ export type log_tb = $Result.DefaultSelection<Prisma.$log_tbPayload>
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
-  U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
+  const U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
   ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -97,13 +97,6 @@ export class PrismaClient<
    * Disconnect from the database
    */
   $disconnect(): $Utils.JsPromise<void>;
-
-  /**
-   * Add a middleware
-   * @deprecated since 4.16.0. For new code, prefer client extensions instead.
-   * @see https://pris.ly/d/extensions
-   */
-  $use(cb: Prisma.Middleware): void
 
 /**
    * Executes a prepared raw query and returns the number of affected rows.
@@ -301,8 +294,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.5.0
-   * Query Engine version: 173f8d54f8d52e692c7e27e72a88314ec7aeff60
+   * Prisma Client JS version: 6.14.0
+   * Query Engine version: 717184b7b35ea05dfa71a3236b7af656013e1e49
    */
   export type PrismaVersion = {
     client: string
@@ -1217,16 +1210,24 @@ export namespace Prisma {
     /**
      * @example
      * ```
-     * // Defaults to stdout
+     * // Shorthand for `emit: 'stdout'`
      * log: ['query', 'info', 'warn', 'error']
      * 
-     * // Emit as events
+     * // Emit as events only
      * log: [
-     *   { emit: 'stdout', level: 'query' },
-     *   { emit: 'stdout', level: 'info' },
-     *   { emit: 'stdout', level: 'warn' }
-     *   { emit: 'stdout', level: 'error' }
+     *   { emit: 'event', level: 'query' },
+     *   { emit: 'event', level: 'info' },
+     *   { emit: 'event', level: 'warn' }
+     *   { emit: 'event', level: 'error' }
      * ]
+     * 
+     * / Emit as events and log to stdout
+     * og: [
+     *  { emit: 'stdout', level: 'query' },
+     *  { emit: 'stdout', level: 'info' },
+     *  { emit: 'stdout', level: 'warn' }
+     *  { emit: 'stdout', level: 'error' }
+     * 
      * ```
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
@@ -1274,10 +1275,15 @@ export namespace Prisma {
     emit: 'stdout' | 'event'
   }
 
-  export type GetLogType<T extends LogLevel | LogDefinition> = T extends LogDefinition ? T['emit'] extends 'event' ? T['level'] : never : never
-  export type GetEvents<T extends any> = T extends Array<LogLevel | LogDefinition> ?
-    GetLogType<T[0]> | GetLogType<T[1]> | GetLogType<T[2]> | GetLogType<T[3]>
-    : never
+  export type CheckIsLogLevel<T> = T extends LogLevel ? T : never;
+
+  export type GetLogType<T> = CheckIsLogLevel<
+    T extends LogDefinition ? T['level'] : T
+  >;
+
+  export type GetEvents<T extends any[]> = T extends Array<LogLevel | LogDefinition>
+    ? GetLogType<T[number]>
+    : never;
 
   export type QueryEvent = {
     timestamp: Date
@@ -1317,25 +1323,6 @@ export namespace Prisma {
     | 'runCommandRaw'
     | 'findRaw'
     | 'groupBy'
-
-  /**
-   * These options are being passed into the middleware as "params"
-   */
-  export type MiddlewareParams = {
-    model?: ModelName
-    action: PrismaAction
-    args: any
-    dataPath: string[]
-    runInTransaction: boolean
-  }
-
-  /**
-   * The `T` type makes sure, that the `return proceed` is not forgotten in the middleware implementation
-   */
-  export type Middleware<T = any> = (
-    params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
-  ) => $Utils.JsPromise<T>
 
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
@@ -1468,11 +1455,11 @@ export namespace Prisma {
   }
 
   export type User_tbSumAggregateOutputType = {
-    userId: bigint | null
+    userId: number | null
   }
 
   export type User_tbMinAggregateOutputType = {
-    userId: bigint | null
+    userId: number | null
     userName: string | null
     userEmail: string | null
     userPassword: string | null
@@ -1480,7 +1467,7 @@ export namespace Prisma {
   }
 
   export type User_tbMaxAggregateOutputType = {
-    userId: bigint | null
+    userId: number | null
     userName: string | null
     userEmail: string | null
     userPassword: string | null
@@ -1617,7 +1604,7 @@ export namespace Prisma {
   }
 
   export type User_tbGroupByOutputType = {
-    userId: bigint
+    userId: number
     userName: string
     userEmail: string
     userPassword: string
@@ -1675,7 +1662,7 @@ export namespace Prisma {
       chats: Prisma.$chat_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      userId: bigint
+      userId: number
       userName: string
       userEmail: string
       userPassword: string
@@ -2048,9 +2035,9 @@ export namespace Prisma {
 
   /**
    * Fields of the user_tb model
-   */ 
+   */
   interface user_tbFieldRefs {
-    readonly userId: FieldRef<"user_tb", 'BigInt'>
+    readonly userId: FieldRef<"user_tb", 'Int'>
     readonly userName: FieldRef<"user_tb", 'String'>
     readonly userEmail: FieldRef<"user_tb", 'String'>
     readonly userPassword: FieldRef<"user_tb", 'String'>
@@ -2457,20 +2444,20 @@ export namespace Prisma {
   }
 
   export type Chat_tbSumAggregateOutputType = {
-    chatId: bigint | null
-    userId: bigint | null
+    chatId: number | null
+    userId: number | null
   }
 
   export type Chat_tbMinAggregateOutputType = {
-    chatId: bigint | null
-    userId: bigint | null
+    chatId: number | null
+    userId: number | null
     chatHeader: string | null
     createAt: Date | null
   }
 
   export type Chat_tbMaxAggregateOutputType = {
-    chatId: bigint | null
-    userId: bigint | null
+    chatId: number | null
+    userId: number | null
     chatHeader: string | null
     createAt: Date | null
   }
@@ -2603,8 +2590,8 @@ export namespace Prisma {
   }
 
   export type Chat_tbGroupByOutputType = {
-    chatId: bigint
-    userId: bigint
+    chatId: number
+    userId: number
     chatHeader: string
     createAt: Date
     _count: Chat_tbCountAggregateOutputType | null
@@ -2661,8 +2648,8 @@ export namespace Prisma {
       qnas: Prisma.$qNa_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      chatId: bigint
-      userId: bigint
+      chatId: number
+      userId: number
       chatHeader: string
       createAt: Date
     }, ExtArgs["result"]["chat_tb"]>
@@ -3034,10 +3021,10 @@ export namespace Prisma {
 
   /**
    * Fields of the chat_tb model
-   */ 
+   */
   interface chat_tbFieldRefs {
-    readonly chatId: FieldRef<"chat_tb", 'BigInt'>
-    readonly userId: FieldRef<"chat_tb", 'BigInt'>
+    readonly chatId: FieldRef<"chat_tb", 'Int'>
+    readonly userId: FieldRef<"chat_tb", 'Int'>
     readonly chatHeader: FieldRef<"chat_tb", 'String'>
     readonly createAt: FieldRef<"chat_tb", 'DateTime'>
   }
@@ -3442,21 +3429,23 @@ export namespace Prisma {
   }
 
   export type QNa_tbSumAggregateOutputType = {
-    qNaId: bigint | null
-    chatId: bigint | null
+    qNaId: number | null
+    chatId: number | null
   }
 
   export type QNa_tbMinAggregateOutputType = {
-    qNaId: bigint | null
-    chatId: bigint | null
+    qNaId: number | null
+    chatId: number | null
+    taskId: string | null
     qNaWords: string | null
     qNaType: string | null
     createdAt: Date | null
   }
 
   export type QNa_tbMaxAggregateOutputType = {
-    qNaId: bigint | null
-    chatId: bigint | null
+    qNaId: number | null
+    chatId: number | null
+    taskId: string | null
     qNaWords: string | null
     qNaType: string | null
     createdAt: Date | null
@@ -3465,6 +3454,7 @@ export namespace Prisma {
   export type QNa_tbCountAggregateOutputType = {
     qNaId: number
     chatId: number
+    taskId: number
     qNaWords: number
     qNaType: number
     createdAt: number
@@ -3485,6 +3475,7 @@ export namespace Prisma {
   export type QNa_tbMinAggregateInputType = {
     qNaId?: true
     chatId?: true
+    taskId?: true
     qNaWords?: true
     qNaType?: true
     createdAt?: true
@@ -3493,6 +3484,7 @@ export namespace Prisma {
   export type QNa_tbMaxAggregateInputType = {
     qNaId?: true
     chatId?: true
+    taskId?: true
     qNaWords?: true
     qNaType?: true
     createdAt?: true
@@ -3501,6 +3493,7 @@ export namespace Prisma {
   export type QNa_tbCountAggregateInputType = {
     qNaId?: true
     chatId?: true
+    taskId?: true
     qNaWords?: true
     qNaType?: true
     createdAt?: true
@@ -3594,8 +3587,9 @@ export namespace Prisma {
   }
 
   export type QNa_tbGroupByOutputType = {
-    qNaId: bigint
-    chatId: bigint
+    qNaId: number
+    chatId: number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt: Date
@@ -3623,6 +3617,7 @@ export namespace Prisma {
   export type qNa_tbSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     qNaId?: boolean
     chatId?: boolean
+    taskId?: boolean
     qNaWords?: boolean
     qNaType?: boolean
     createdAt?: boolean
@@ -3634,12 +3629,13 @@ export namespace Prisma {
   export type qNa_tbSelectScalar = {
     qNaId?: boolean
     chatId?: boolean
+    taskId?: boolean
     qNaWords?: boolean
     qNaType?: boolean
     createdAt?: boolean
   }
 
-  export type qNa_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"qNaId" | "chatId" | "qNaWords" | "qNaType" | "createdAt", ExtArgs["result"]["qNa_tb"]>
+  export type qNa_tbOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"qNaId" | "chatId" | "taskId" | "qNaWords" | "qNaType" | "createdAt", ExtArgs["result"]["qNa_tb"]>
   export type qNa_tbInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chat?: boolean | chat_tbDefaultArgs<ExtArgs>
   }
@@ -3650,8 +3646,9 @@ export namespace Prisma {
       chat: Prisma.$chat_tbPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      qNaId: bigint
-      chatId: bigint
+      qNaId: number
+      chatId: number
+      taskId: string
       qNaWords: string
       qNaType: string
       createdAt: Date
@@ -4023,10 +4020,11 @@ export namespace Prisma {
 
   /**
    * Fields of the qNa_tb model
-   */ 
+   */
   interface qNa_tbFieldRefs {
-    readonly qNaId: FieldRef<"qNa_tb", 'BigInt'>
-    readonly chatId: FieldRef<"qNa_tb", 'BigInt'>
+    readonly qNaId: FieldRef<"qNa_tb", 'Int'>
+    readonly chatId: FieldRef<"qNa_tb", 'Int'>
+    readonly taskId: FieldRef<"qNa_tb", 'String'>
     readonly qNaWords: FieldRef<"qNa_tb", 'String'>
     readonly qNaType: FieldRef<"qNa_tb", 'String'>
     readonly createdAt: FieldRef<"qNa_tb", 'DateTime'>
@@ -4407,18 +4405,18 @@ export namespace Prisma {
   }
 
   export type Book_tbSumAggregateOutputType = {
-    bookId: bigint | null
+    bookId: number | null
   }
 
   export type Book_tbMinAggregateOutputType = {
-    bookId: bigint | null
+    bookId: number | null
     bookName: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type Book_tbMaxAggregateOutputType = {
-    bookId: bigint | null
+    bookId: number | null
     bookName: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4550,7 +4548,7 @@ export namespace Prisma {
   }
 
   export type Book_tbGroupByOutputType = {
-    bookId: bigint
+    bookId: number
     bookName: string
     createdAt: Date
     updatedAt: Date
@@ -4605,7 +4603,7 @@ export namespace Prisma {
       chapters: Prisma.$chapter_tbPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      bookId: bigint
+      bookId: number
       bookName: string
       createdAt: Date
       updatedAt: Date
@@ -4977,9 +4975,9 @@ export namespace Prisma {
 
   /**
    * Fields of the book_tb model
-   */ 
+   */
   interface book_tbFieldRefs {
-    readonly bookId: FieldRef<"book_tb", 'BigInt'>
+    readonly bookId: FieldRef<"book_tb", 'Int'>
     readonly bookName: FieldRef<"book_tb", 'String'>
     readonly createdAt: FieldRef<"book_tb", 'DateTime'>
     readonly updatedAt: FieldRef<"book_tb", 'DateTime'>
@@ -5385,13 +5383,13 @@ export namespace Prisma {
   }
 
   export type Chapter_tbSumAggregateOutputType = {
-    chapterId: bigint | null
-    bookId: bigint | null
+    chapterId: number | null
+    bookId: number | null
   }
 
   export type Chapter_tbMinAggregateOutputType = {
-    chapterId: bigint | null
-    bookId: bigint | null
+    chapterId: number | null
+    bookId: number | null
     chapterName: string | null
     chapterText: string | null
     createdAt: Date | null
@@ -5399,8 +5397,8 @@ export namespace Prisma {
   }
 
   export type Chapter_tbMaxAggregateOutputType = {
-    chapterId: bigint | null
-    bookId: bigint | null
+    chapterId: number | null
+    bookId: number | null
     chapterName: string | null
     chapterText: string | null
     createdAt: Date | null
@@ -5543,8 +5541,8 @@ export namespace Prisma {
   }
 
   export type Chapter_tbGroupByOutputType = {
-    chapterId: bigint
-    bookId: bigint
+    chapterId: number
+    bookId: number
     chapterName: string
     chapterText: string
     createdAt: Date
@@ -5602,8 +5600,8 @@ export namespace Prisma {
       book: Prisma.$book_tbPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      chapterId: bigint
-      bookId: bigint
+      chapterId: number
+      bookId: number
       chapterName: string
       chapterText: string
       createdAt: Date
@@ -5976,10 +5974,10 @@ export namespace Prisma {
 
   /**
    * Fields of the chapter_tb model
-   */ 
+   */
   interface chapter_tbFieldRefs {
-    readonly chapterId: FieldRef<"chapter_tb", 'BigInt'>
-    readonly bookId: FieldRef<"chapter_tb", 'BigInt'>
+    readonly chapterId: FieldRef<"chapter_tb", 'Int'>
+    readonly bookId: FieldRef<"chapter_tb", 'Int'>
     readonly chapterName: FieldRef<"chapter_tb", 'String'>
     readonly chapterText: FieldRef<"chapter_tb", 'String'>
     readonly createdAt: FieldRef<"chapter_tb", 'DateTime'>
@@ -6361,18 +6359,18 @@ export namespace Prisma {
   }
 
   export type Embeddings_tbSumAggregateOutputType = {
-    id: bigint | null
+    id: number | null
   }
 
   export type Embeddings_tbMinAggregateOutputType = {
-    id: bigint | null
+    id: number | null
     embeddings: Uint8Array | null
     metadata: Uint8Array | null
     updatedAt: Date | null
   }
 
   export type Embeddings_tbMaxAggregateOutputType = {
-    id: bigint | null
+    id: number | null
     embeddings: Uint8Array | null
     metadata: Uint8Array | null
     updatedAt: Date | null
@@ -6504,7 +6502,7 @@ export namespace Prisma {
   }
 
   export type Embeddings_tbGroupByOutputType = {
-    id: bigint
+    id: number
     embeddings: Uint8Array
     metadata: Uint8Array
     updatedAt: Date
@@ -6551,7 +6549,7 @@ export namespace Prisma {
     name: "embeddings_tb"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: bigint
+      id: number
       embeddings: Uint8Array
       metadata: Uint8Array
       updatedAt: Date
@@ -6922,9 +6920,9 @@ export namespace Prisma {
 
   /**
    * Fields of the embeddings_tb model
-   */ 
+   */
   interface embeddings_tbFieldRefs {
-    readonly id: FieldRef<"embeddings_tb", 'BigInt'>
+    readonly id: FieldRef<"embeddings_tb", 'Int'>
     readonly embeddings: FieldRef<"embeddings_tb", 'Bytes'>
     readonly metadata: FieldRef<"embeddings_tb", 'Bytes'>
     readonly updatedAt: FieldRef<"embeddings_tb", 'DateTime'>
@@ -7265,17 +7263,17 @@ export namespace Prisma {
   }
 
   export type Log_tbSumAggregateOutputType = {
-    id: bigint | null
+    id: number | null
   }
 
   export type Log_tbMinAggregateOutputType = {
-    id: bigint | null
+    id: number | null
     createdAt: Date | null
     message: string | null
   }
 
   export type Log_tbMaxAggregateOutputType = {
-    id: bigint | null
+    id: number | null
     createdAt: Date | null
     message: string | null
   }
@@ -7402,7 +7400,7 @@ export namespace Prisma {
   }
 
   export type Log_tbGroupByOutputType = {
-    id: bigint
+    id: number
     createdAt: Date
     message: string
     _count: Log_tbCountAggregateOutputType | null
@@ -7446,7 +7444,7 @@ export namespace Prisma {
     name: "log_tb"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: bigint
+      id: number
       createdAt: Date
       message: string
     }, ExtArgs["result"]["log_tb"]>
@@ -7816,9 +7814,9 @@ export namespace Prisma {
 
   /**
    * Fields of the log_tb model
-   */ 
+   */
   interface log_tbFieldRefs {
-    readonly id: FieldRef<"log_tb", 'BigInt'>
+    readonly id: FieldRef<"log_tb", 'Int'>
     readonly createdAt: FieldRef<"log_tb", 'DateTime'>
     readonly message: FieldRef<"log_tb", 'String'>
   }
@@ -8180,6 +8178,7 @@ export namespace Prisma {
   export const QNa_tbScalarFieldEnum: {
     qNaId: 'qNaId',
     chatId: 'chatId',
+    taskId: 'taskId',
     qNaWords: 'qNaWords',
     qNaType: 'qNaType',
     createdAt: 'createdAt'
@@ -8238,14 +8237,14 @@ export namespace Prisma {
 
 
   /**
-   * Field references 
+   * Field references
    */
 
 
   /**
-   * Reference to a field of type 'BigInt'
+   * Reference to a field of type 'Int'
    */
-  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -8271,13 +8270,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -8291,7 +8283,7 @@ export namespace Prisma {
     AND?: user_tbWhereInput | user_tbWhereInput[]
     OR?: user_tbWhereInput[]
     NOT?: user_tbWhereInput | user_tbWhereInput[]
-    userId?: BigIntFilter<"user_tb"> | bigint | number
+    userId?: IntFilter<"user_tb"> | number
     userName?: StringFilter<"user_tb"> | string
     userEmail?: StringFilter<"user_tb"> | string
     userPassword?: StringFilter<"user_tb"> | string
@@ -8309,7 +8301,7 @@ export namespace Prisma {
   }
 
   export type user_tbWhereUniqueInput = Prisma.AtLeast<{
-    userId?: bigint | number
+    userId?: number
     AND?: user_tbWhereInput | user_tbWhereInput[]
     OR?: user_tbWhereInput[]
     NOT?: user_tbWhereInput | user_tbWhereInput[]
@@ -8337,7 +8329,7 @@ export namespace Prisma {
     AND?: user_tbScalarWhereWithAggregatesInput | user_tbScalarWhereWithAggregatesInput[]
     OR?: user_tbScalarWhereWithAggregatesInput[]
     NOT?: user_tbScalarWhereWithAggregatesInput | user_tbScalarWhereWithAggregatesInput[]
-    userId?: BigIntWithAggregatesFilter<"user_tb"> | bigint | number
+    userId?: IntWithAggregatesFilter<"user_tb"> | number
     userName?: StringWithAggregatesFilter<"user_tb"> | string
     userEmail?: StringWithAggregatesFilter<"user_tb"> | string
     userPassword?: StringWithAggregatesFilter<"user_tb"> | string
@@ -8348,8 +8340,8 @@ export namespace Prisma {
     AND?: chat_tbWhereInput | chat_tbWhereInput[]
     OR?: chat_tbWhereInput[]
     NOT?: chat_tbWhereInput | chat_tbWhereInput[]
-    chatId?: BigIntFilter<"chat_tb"> | bigint | number
-    userId?: BigIntFilter<"chat_tb"> | bigint | number
+    chatId?: IntFilter<"chat_tb"> | number
+    userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
@@ -8366,11 +8358,11 @@ export namespace Prisma {
   }
 
   export type chat_tbWhereUniqueInput = Prisma.AtLeast<{
-    chatId?: bigint | number
+    chatId?: number
     AND?: chat_tbWhereInput | chat_tbWhereInput[]
     OR?: chat_tbWhereInput[]
     NOT?: chat_tbWhereInput | chat_tbWhereInput[]
-    userId?: BigIntFilter<"chat_tb"> | bigint | number
+    userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
     user?: XOR<User_tbScalarRelationFilter, user_tbWhereInput>
@@ -8393,8 +8385,8 @@ export namespace Prisma {
     AND?: chat_tbScalarWhereWithAggregatesInput | chat_tbScalarWhereWithAggregatesInput[]
     OR?: chat_tbScalarWhereWithAggregatesInput[]
     NOT?: chat_tbScalarWhereWithAggregatesInput | chat_tbScalarWhereWithAggregatesInput[]
-    chatId?: BigIntWithAggregatesFilter<"chat_tb"> | bigint | number
-    userId?: BigIntWithAggregatesFilter<"chat_tb"> | bigint | number
+    chatId?: IntWithAggregatesFilter<"chat_tb"> | number
+    userId?: IntWithAggregatesFilter<"chat_tb"> | number
     chatHeader?: StringWithAggregatesFilter<"chat_tb"> | string
     createAt?: DateTimeWithAggregatesFilter<"chat_tb"> | Date | string
   }
@@ -8403,8 +8395,9 @@ export namespace Prisma {
     AND?: qNa_tbWhereInput | qNa_tbWhereInput[]
     OR?: qNa_tbWhereInput[]
     NOT?: qNa_tbWhereInput | qNa_tbWhereInput[]
-    qNaId?: BigIntFilter<"qNa_tb"> | bigint | number
-    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
+    qNaId?: IntFilter<"qNa_tb"> | number
+    chatId?: IntFilter<"qNa_tb"> | number
+    taskId?: StringFilter<"qNa_tb"> | string
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
@@ -8414,6 +8407,7 @@ export namespace Prisma {
   export type qNa_tbOrderByWithRelationInput = {
     qNaId?: SortOrder
     chatId?: SortOrder
+    taskId?: SortOrder
     qNaWords?: SortOrder
     qNaType?: SortOrder
     createdAt?: SortOrder
@@ -8421,11 +8415,12 @@ export namespace Prisma {
   }
 
   export type qNa_tbWhereUniqueInput = Prisma.AtLeast<{
-    qNaId?: bigint | number
+    qNaId?: number
     AND?: qNa_tbWhereInput | qNa_tbWhereInput[]
     OR?: qNa_tbWhereInput[]
     NOT?: qNa_tbWhereInput | qNa_tbWhereInput[]
-    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
+    chatId?: IntFilter<"qNa_tb"> | number
+    taskId?: StringFilter<"qNa_tb"> | string
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
@@ -8435,6 +8430,7 @@ export namespace Prisma {
   export type qNa_tbOrderByWithAggregationInput = {
     qNaId?: SortOrder
     chatId?: SortOrder
+    taskId?: SortOrder
     qNaWords?: SortOrder
     qNaType?: SortOrder
     createdAt?: SortOrder
@@ -8449,8 +8445,9 @@ export namespace Prisma {
     AND?: qNa_tbScalarWhereWithAggregatesInput | qNa_tbScalarWhereWithAggregatesInput[]
     OR?: qNa_tbScalarWhereWithAggregatesInput[]
     NOT?: qNa_tbScalarWhereWithAggregatesInput | qNa_tbScalarWhereWithAggregatesInput[]
-    qNaId?: BigIntWithAggregatesFilter<"qNa_tb"> | bigint | number
-    chatId?: BigIntWithAggregatesFilter<"qNa_tb"> | bigint | number
+    qNaId?: IntWithAggregatesFilter<"qNa_tb"> | number
+    chatId?: IntWithAggregatesFilter<"qNa_tb"> | number
+    taskId?: StringWithAggregatesFilter<"qNa_tb"> | string
     qNaWords?: StringWithAggregatesFilter<"qNa_tb"> | string
     qNaType?: StringWithAggregatesFilter<"qNa_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"qNa_tb"> | Date | string
@@ -8460,7 +8457,7 @@ export namespace Prisma {
     AND?: book_tbWhereInput | book_tbWhereInput[]
     OR?: book_tbWhereInput[]
     NOT?: book_tbWhereInput | book_tbWhereInput[]
-    bookId?: BigIntFilter<"book_tb"> | bigint | number
+    bookId?: IntFilter<"book_tb"> | number
     bookName?: StringFilter<"book_tb"> | string
     createdAt?: DateTimeFilter<"book_tb"> | Date | string
     updatedAt?: DateTimeFilter<"book_tb"> | Date | string
@@ -8476,7 +8473,7 @@ export namespace Prisma {
   }
 
   export type book_tbWhereUniqueInput = Prisma.AtLeast<{
-    bookId?: bigint | number
+    bookId?: number
     AND?: book_tbWhereInput | book_tbWhereInput[]
     OR?: book_tbWhereInput[]
     NOT?: book_tbWhereInput | book_tbWhereInput[]
@@ -8502,7 +8499,7 @@ export namespace Prisma {
     AND?: book_tbScalarWhereWithAggregatesInput | book_tbScalarWhereWithAggregatesInput[]
     OR?: book_tbScalarWhereWithAggregatesInput[]
     NOT?: book_tbScalarWhereWithAggregatesInput | book_tbScalarWhereWithAggregatesInput[]
-    bookId?: BigIntWithAggregatesFilter<"book_tb"> | bigint | number
+    bookId?: IntWithAggregatesFilter<"book_tb"> | number
     bookName?: StringWithAggregatesFilter<"book_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"book_tb"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"book_tb"> | Date | string
@@ -8512,8 +8509,8 @@ export namespace Prisma {
     AND?: chapter_tbWhereInput | chapter_tbWhereInput[]
     OR?: chapter_tbWhereInput[]
     NOT?: chapter_tbWhereInput | chapter_tbWhereInput[]
-    chapterId?: BigIntFilter<"chapter_tb"> | bigint | number
-    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
+    chapterId?: IntFilter<"chapter_tb"> | number
+    bookId?: IntFilter<"chapter_tb"> | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -8532,11 +8529,11 @@ export namespace Prisma {
   }
 
   export type chapter_tbWhereUniqueInput = Prisma.AtLeast<{
-    chapterId?: bigint | number
+    chapterId?: number
     AND?: chapter_tbWhereInput | chapter_tbWhereInput[]
     OR?: chapter_tbWhereInput[]
     NOT?: chapter_tbWhereInput | chapter_tbWhereInput[]
-    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
+    bookId?: IntFilter<"chapter_tb"> | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -8562,8 +8559,8 @@ export namespace Prisma {
     AND?: chapter_tbScalarWhereWithAggregatesInput | chapter_tbScalarWhereWithAggregatesInput[]
     OR?: chapter_tbScalarWhereWithAggregatesInput[]
     NOT?: chapter_tbScalarWhereWithAggregatesInput | chapter_tbScalarWhereWithAggregatesInput[]
-    chapterId?: BigIntWithAggregatesFilter<"chapter_tb"> | bigint | number
-    bookId?: BigIntWithAggregatesFilter<"chapter_tb"> | bigint | number
+    chapterId?: IntWithAggregatesFilter<"chapter_tb"> | number
+    bookId?: IntWithAggregatesFilter<"chapter_tb"> | number
     chapterName?: StringWithAggregatesFilter<"chapter_tb"> | string
     chapterText?: StringWithAggregatesFilter<"chapter_tb"> | string
     createdAt?: DateTimeWithAggregatesFilter<"chapter_tb"> | Date | string
@@ -8574,7 +8571,7 @@ export namespace Prisma {
     AND?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
     OR?: embeddings_tbWhereInput[]
     NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
-    id?: BigIntFilter<"embeddings_tb"> | bigint | number
+    id?: IntFilter<"embeddings_tb"> | number
     embeddings?: BytesFilter<"embeddings_tb"> | Uint8Array
     metadata?: BytesFilter<"embeddings_tb"> | Uint8Array
     updatedAt?: DateTimeFilter<"embeddings_tb"> | Date | string
@@ -8588,7 +8585,7 @@ export namespace Prisma {
   }
 
   export type embeddings_tbWhereUniqueInput = Prisma.AtLeast<{
-    id?: bigint | number
+    id?: number
     AND?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
     OR?: embeddings_tbWhereInput[]
     NOT?: embeddings_tbWhereInput | embeddings_tbWhereInput[]
@@ -8613,7 +8610,7 @@ export namespace Prisma {
     AND?: embeddings_tbScalarWhereWithAggregatesInput | embeddings_tbScalarWhereWithAggregatesInput[]
     OR?: embeddings_tbScalarWhereWithAggregatesInput[]
     NOT?: embeddings_tbScalarWhereWithAggregatesInput | embeddings_tbScalarWhereWithAggregatesInput[]
-    id?: BigIntWithAggregatesFilter<"embeddings_tb"> | bigint | number
+    id?: IntWithAggregatesFilter<"embeddings_tb"> | number
     embeddings?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
     metadata?: BytesWithAggregatesFilter<"embeddings_tb"> | Uint8Array
     updatedAt?: DateTimeWithAggregatesFilter<"embeddings_tb"> | Date | string
@@ -8623,7 +8620,7 @@ export namespace Prisma {
     AND?: log_tbWhereInput | log_tbWhereInput[]
     OR?: log_tbWhereInput[]
     NOT?: log_tbWhereInput | log_tbWhereInput[]
-    id?: BigIntFilter<"log_tb"> | bigint | number
+    id?: IntFilter<"log_tb"> | number
     createdAt?: DateTimeFilter<"log_tb"> | Date | string
     message?: StringFilter<"log_tb"> | string
   }
@@ -8635,7 +8632,7 @@ export namespace Prisma {
   }
 
   export type log_tbWhereUniqueInput = Prisma.AtLeast<{
-    id?: bigint | number
+    id?: number
     AND?: log_tbWhereInput | log_tbWhereInput[]
     OR?: log_tbWhereInput[]
     NOT?: log_tbWhereInput | log_tbWhereInput[]
@@ -8658,13 +8655,12 @@ export namespace Prisma {
     AND?: log_tbScalarWhereWithAggregatesInput | log_tbScalarWhereWithAggregatesInput[]
     OR?: log_tbScalarWhereWithAggregatesInput[]
     NOT?: log_tbScalarWhereWithAggregatesInput | log_tbScalarWhereWithAggregatesInput[]
-    id?: BigIntWithAggregatesFilter<"log_tb"> | bigint | number
+    id?: IntWithAggregatesFilter<"log_tb"> | number
     createdAt?: DateTimeWithAggregatesFilter<"log_tb"> | Date | string
     message?: StringWithAggregatesFilter<"log_tb"> | string
   }
 
   export type user_tbCreateInput = {
-    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -8673,7 +8669,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedCreateInput = {
-    userId?: bigint | number
+    userId?: number
     userName: string
     userEmail: string
     userPassword: string
@@ -8682,7 +8678,6 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8691,7 +8686,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: IntFieldUpdateOperationsInput | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8707,7 +8702,6 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateManyMutationInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8715,7 +8709,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateManyInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: IntFieldUpdateOperationsInput | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -8723,7 +8717,6 @@ export namespace Prisma {
   }
 
   export type chat_tbCreateInput = {
-    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
@@ -8731,15 +8724,14 @@ export namespace Prisma {
   }
 
   export type chat_tbUncheckedCreateInput = {
-    chatId?: bigint | number
-    userId: bigint | number
+    chatId?: number
+    userId: number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUpdateInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
@@ -8747,34 +8739,33 @@ export namespace Prisma {
   }
 
   export type chat_tbUncheckedUpdateInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbCreateManyInput = {
-    userId: bigint | number
+    userId: number
     chatHeader: string
     createAt?: Date | string
   }
 
   export type chat_tbUpdateManyMutationInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chat_tbUncheckedUpdateManyInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateInput = {
-    qNaId?: bigint | number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
@@ -8782,15 +8773,16 @@ export namespace Prisma {
   }
 
   export type qNa_tbUncheckedCreateInput = {
-    qNaId?: bigint | number
-    chatId: bigint | number
+    qNaId?: number
+    chatId: number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUpdateInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8798,37 +8790,39 @@ export namespace Prisma {
   }
 
   export type qNa_tbUncheckedUpdateInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    qNaId?: IntFieldUpdateOperationsInput | number
+    chatId?: IntFieldUpdateOperationsInput | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateManyInput = {
-    chatId: bigint | number
+    chatId: number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUpdateManyMutationInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateManyInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    qNaId?: IntFieldUpdateOperationsInput | number
+    chatId?: IntFieldUpdateOperationsInput | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbCreateInput = {
-    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8836,7 +8830,7 @@ export namespace Prisma {
   }
 
   export type book_tbUncheckedCreateInput = {
-    bookId?: bigint | number
+    bookId?: number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8844,7 +8838,6 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8852,7 +8845,7 @@ export namespace Prisma {
   }
 
   export type book_tbUncheckedUpdateInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
+    bookId?: IntFieldUpdateOperationsInput | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8866,21 +8859,19 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateManyMutationInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbUncheckedUpdateManyInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
+    bookId?: IntFieldUpdateOperationsInput | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chapter_tbCreateInput = {
-    chapterId?: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -8889,8 +8880,8 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedCreateInput = {
-    chapterId?: bigint | number
-    bookId: bigint | number
+    chapterId?: number
+    bookId: number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -8898,7 +8889,6 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8907,8 +8897,8 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chapterId?: IntFieldUpdateOperationsInput | number
+    bookId?: IntFieldUpdateOperationsInput | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8916,7 +8906,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbCreateManyInput = {
-    bookId: bigint | number
+    bookId: number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -8924,7 +8914,6 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateManyMutationInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8932,8 +8921,8 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateManyInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chapterId?: IntFieldUpdateOperationsInput | number
+    bookId?: IntFieldUpdateOperationsInput | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8941,28 +8930,26 @@ export namespace Prisma {
   }
 
   export type embeddings_tbCreateInput = {
-    id?: bigint | number
     embeddings: Uint8Array
     metadata: Uint8Array
     updatedAt?: Date | string
   }
 
   export type embeddings_tbUncheckedCreateInput = {
-    id?: bigint | number
+    id?: number
     embeddings: Uint8Array
     metadata: Uint8Array
     updatedAt?: Date | string
   }
 
   export type embeddings_tbUpdateInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type embeddings_tbUncheckedUpdateInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    id?: IntFieldUpdateOperationsInput | number
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8975,39 +8962,36 @@ export namespace Prisma {
   }
 
   export type embeddings_tbUpdateManyMutationInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type embeddings_tbUncheckedUpdateManyInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    id?: IntFieldUpdateOperationsInput | number
     embeddings?: BytesFieldUpdateOperationsInput | Uint8Array
     metadata?: BytesFieldUpdateOperationsInput | Uint8Array
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type log_tbCreateInput = {
-    id?: bigint | number
     createdAt?: Date | string
     message: string
   }
 
   export type log_tbUncheckedCreateInput = {
-    id?: bigint | number
+    id?: number
     createdAt?: Date | string
     message: string
   }
 
   export type log_tbUpdateInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
   export type log_tbUncheckedUpdateInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
@@ -9018,26 +9002,25 @@ export namespace Prisma {
   }
 
   export type log_tbUpdateManyMutationInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
   export type log_tbUncheckedUpdateManyInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
+    id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     message?: StringFieldUpdateOperationsInput | string
   }
 
-  export type BigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[]
-    notIn?: bigint[] | number[]
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -9107,20 +9090,20 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[]
-    notIn?: bigint[] | number[]
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
     _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9208,6 +9191,7 @@ export namespace Prisma {
   export type qNa_tbCountOrderByAggregateInput = {
     qNaId?: SortOrder
     chatId?: SortOrder
+    taskId?: SortOrder
     qNaWords?: SortOrder
     qNaType?: SortOrder
     createdAt?: SortOrder
@@ -9221,6 +9205,7 @@ export namespace Prisma {
   export type qNa_tbMaxOrderByAggregateInput = {
     qNaId?: SortOrder
     chatId?: SortOrder
+    taskId?: SortOrder
     qNaWords?: SortOrder
     qNaType?: SortOrder
     createdAt?: SortOrder
@@ -9229,6 +9214,7 @@ export namespace Prisma {
   export type qNa_tbMinOrderByAggregateInput = {
     qNaId?: SortOrder
     chatId?: SortOrder
+    taskId?: SortOrder
     qNaWords?: SortOrder
     qNaType?: SortOrder
     createdAt?: SortOrder
@@ -9406,14 +9392,6 @@ export namespace Prisma {
     connect?: chat_tbWhereUniqueInput | chat_tbWhereUniqueInput[]
   }
 
-  export type BigIntFieldUpdateOperationsInput = {
-    set?: bigint | number
-    increment?: bigint | number
-    decrement?: bigint | number
-    multiply?: bigint | number
-    divide?: bigint | number
-  }
-
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -9434,6 +9412,14 @@ export namespace Prisma {
     update?: chat_tbUpdateWithWhereUniqueWithoutUserInput | chat_tbUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: chat_tbUpdateManyWithWhereWithoutUserInput | chat_tbUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type chat_tbUncheckedUpdateManyWithoutUserNestedInput = {
@@ -9580,15 +9566,15 @@ export namespace Prisma {
     set?: Uint8Array
   }
 
-  export type NestedBigIntFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[]
-    notIn?: bigint[] | number[]
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9616,23 +9602,7 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    in?: bigint[] | number[]
-    notIn?: bigint[] | number[]
-    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
-    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedBigIntFilter<$PrismaModel>
-    _min?: NestedBigIntFilter<$PrismaModel>
-    _max?: NestedBigIntFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
     notIn?: number[]
@@ -9640,7 +9610,12 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -9703,14 +9678,13 @@ export namespace Prisma {
   }
 
   export type chat_tbCreateWithoutUserInput = {
-    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbCreateNestedManyWithoutChatInput
   }
 
   export type chat_tbUncheckedCreateWithoutUserInput = {
-    chatId?: bigint | number
+    chatId?: number
     chatHeader: string
     createAt?: Date | string
     qnas?: qNa_tbUncheckedCreateNestedManyWithoutChatInput
@@ -9745,14 +9719,13 @@ export namespace Prisma {
     AND?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
     OR?: chat_tbScalarWhereInput[]
     NOT?: chat_tbScalarWhereInput | chat_tbScalarWhereInput[]
-    chatId?: BigIntFilter<"chat_tb"> | bigint | number
-    userId?: BigIntFilter<"chat_tb"> | bigint | number
+    chatId?: IntFilter<"chat_tb"> | number
+    userId?: IntFilter<"chat_tb"> | number
     chatHeader?: StringFilter<"chat_tb"> | string
     createAt?: DateTimeFilter<"chat_tb"> | Date | string
   }
 
   export type user_tbCreateWithoutChatsInput = {
-    userId?: bigint | number
     userName: string
     userEmail: string
     userPassword: string
@@ -9760,7 +9733,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedCreateWithoutChatsInput = {
-    userId?: bigint | number
+    userId?: number
     userName: string
     userEmail: string
     userPassword: string
@@ -9773,14 +9746,15 @@ export namespace Prisma {
   }
 
   export type qNa_tbCreateWithoutChatInput = {
-    qNaId?: bigint | number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUncheckedCreateWithoutChatInput = {
-    qNaId?: bigint | number
+    qNaId?: number
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
@@ -9807,7 +9781,6 @@ export namespace Prisma {
   }
 
   export type user_tbUpdateWithoutChatsInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -9815,7 +9788,7 @@ export namespace Prisma {
   }
 
   export type user_tbUncheckedUpdateWithoutChatsInput = {
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    userId?: IntFieldUpdateOperationsInput | number
     userName?: StringFieldUpdateOperationsInput | string
     userEmail?: StringFieldUpdateOperationsInput | string
     userPassword?: StringFieldUpdateOperationsInput | string
@@ -9842,23 +9815,23 @@ export namespace Prisma {
     AND?: qNa_tbScalarWhereInput | qNa_tbScalarWhereInput[]
     OR?: qNa_tbScalarWhereInput[]
     NOT?: qNa_tbScalarWhereInput | qNa_tbScalarWhereInput[]
-    qNaId?: BigIntFilter<"qNa_tb"> | bigint | number
-    chatId?: BigIntFilter<"qNa_tb"> | bigint | number
+    qNaId?: IntFilter<"qNa_tb"> | number
+    chatId?: IntFilter<"qNa_tb"> | number
+    taskId?: StringFilter<"qNa_tb"> | string
     qNaWords?: StringFilter<"qNa_tb"> | string
     qNaType?: StringFilter<"qNa_tb"> | string
     createdAt?: DateTimeFilter<"qNa_tb"> | Date | string
   }
 
   export type chat_tbCreateWithoutQnasInput = {
-    chatId?: bigint | number
     chatHeader: string
     createAt?: Date | string
     user: user_tbCreateNestedOneWithoutChatsInput
   }
 
   export type chat_tbUncheckedCreateWithoutQnasInput = {
-    chatId?: bigint | number
-    userId: bigint | number
+    chatId?: number
+    userId: number
     chatHeader: string
     createAt?: Date | string
   }
@@ -9880,21 +9853,19 @@ export namespace Prisma {
   }
 
   export type chat_tbUpdateWithoutQnasInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: user_tbUpdateOneRequiredWithoutChatsNestedInput
   }
 
   export type chat_tbUncheckedUpdateWithoutQnasInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
-    userId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type chapter_tbCreateWithoutBookInput = {
-    chapterId?: bigint | number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -9902,7 +9873,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedCreateWithoutBookInput = {
-    chapterId?: bigint | number
+    chapterId?: number
     chapterName: string
     chapterText: string
     createdAt?: Date | string
@@ -9938,8 +9909,8 @@ export namespace Prisma {
     AND?: chapter_tbScalarWhereInput | chapter_tbScalarWhereInput[]
     OR?: chapter_tbScalarWhereInput[]
     NOT?: chapter_tbScalarWhereInput | chapter_tbScalarWhereInput[]
-    chapterId?: BigIntFilter<"chapter_tb"> | bigint | number
-    bookId?: BigIntFilter<"chapter_tb"> | bigint | number
+    chapterId?: IntFilter<"chapter_tb"> | number
+    bookId?: IntFilter<"chapter_tb"> | number
     chapterName?: StringFilter<"chapter_tb"> | string
     chapterText?: StringFilter<"chapter_tb"> | string
     createdAt?: DateTimeFilter<"chapter_tb"> | Date | string
@@ -9947,14 +9918,13 @@ export namespace Prisma {
   }
 
   export type book_tbCreateWithoutChaptersInput = {
-    bookId?: bigint | number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type book_tbUncheckedCreateWithoutChaptersInput = {
-    bookId?: bigint | number
+    bookId?: number
     bookName: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9977,14 +9947,13 @@ export namespace Prisma {
   }
 
   export type book_tbUpdateWithoutChaptersInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type book_tbUncheckedUpdateWithoutChaptersInput = {
-    bookId?: BigIntFieldUpdateOperationsInput | bigint | number
+    bookId?: IntFieldUpdateOperationsInput | number
     bookName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9996,47 +9965,49 @@ export namespace Prisma {
   }
 
   export type chat_tbUpdateWithoutUserInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateWithoutUserInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qnas?: qNa_tbUncheckedUpdateManyWithoutChatNestedInput
   }
 
   export type chat_tbUncheckedUpdateManyWithoutUserInput = {
-    chatId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chatId?: IntFieldUpdateOperationsInput | number
     chatHeader?: StringFieldUpdateOperationsInput | string
     createAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbCreateManyChatInput = {
+    taskId: string
     qNaWords: string
     qNaType: string
     createdAt?: Date | string
   }
 
   export type qNa_tbUpdateWithoutChatInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateWithoutChatInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    qNaId?: IntFieldUpdateOperationsInput | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type qNa_tbUncheckedUpdateManyWithoutChatInput = {
-    qNaId?: BigIntFieldUpdateOperationsInput | bigint | number
+    qNaId?: IntFieldUpdateOperationsInput | number
+    taskId?: StringFieldUpdateOperationsInput | string
     qNaWords?: StringFieldUpdateOperationsInput | string
     qNaType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10050,7 +10021,6 @@ export namespace Prisma {
   }
 
   export type chapter_tbUpdateWithoutBookInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10058,7 +10028,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateWithoutBookInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chapterId?: IntFieldUpdateOperationsInput | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10066,7 +10036,7 @@ export namespace Prisma {
   }
 
   export type chapter_tbUncheckedUpdateManyWithoutBookInput = {
-    chapterId?: BigIntFieldUpdateOperationsInput | bigint | number
+    chapterId?: IntFieldUpdateOperationsInput | number
     chapterName?: StringFieldUpdateOperationsInput | string
     chapterText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

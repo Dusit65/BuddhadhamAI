@@ -23,88 +23,88 @@ with open(log_file, "r+") as f:
 class JobManager:
     def __init__(self, max_process=2):
         manager = Manager()
-        self.queue = []  # list ของ dict {jobId, args}
-        self.running_jobs = {}  # jobId -> {"process": Process, "args": args}
+        self.queue = []  # list ของ dict {taskId, args}
+        self.running_jobs = {}  # taskId -> {"process": Process, "args": args}
         self.max_process = max_process
         self.results = manager.dict()
         self.status = manager.dict()  # queued/running/done/cancelled
 
-    def add_job(self, jobId, args):
-        job = {"jobId": jobId, "args": args}
+    def add_job(self, taskId, args):
+        job = {"taskId": taskId, "args": args}
         self.queue.append(job)
-        self.status[jobId] = "queued"
+        self.status[taskId] = "queued"
         self.try_run_next()
 
     def try_run_next(self):
         # รัน job จนกว่าจะถึง max_process
         while len(self.running_jobs) < self.max_process and self.queue:
             job = self.queue.pop(0)
-            jobId, args = job["jobId"], job["args"]
-            p = Process(target=self._run_job, args=(jobId, args))
+            taskId, args = job["taskId"], job["args"]
+            p = Process(target=self._run_job, args=(taskId, args))
             p.start()
-            self.running_jobs[jobId] = {"process": p, "args": args}
-            self.status[jobId] = "running"
-            print(f"[JobManager] Start job {jobId} with args: {args}")
+            self.running_jobs[taskId] = {"process": p, "args": args}
+            self.status[taskId] = "running"
+            print(f"[JobManager] Start job {taskId} with args: {args}")
 
-    def _run_job(self, jobId, args):
+    def _run_job(self, taskId, args):
         try:
             sys.argv = ["BuddhamAI_cli.py"] + args
             result = BuddhamAI_cli.ask_cli(args)
-            self.results[jobId] = {"status": "done", "data": result}
-            self.status[jobId] = "done"
-            print(f"[JobManager] Job {jobId} done")
+            self.results[taskId] = {"status": "done", "data": result}
+            self.status[taskId] = "done"
+            print(f"[JobManager] Job {taskId} done")
         except Exception as e:
-            self.results[jobId] = {"status": "error", "error": str(e)}
-            self.status[jobId] = "error"
-            print(f"[JobManager] Job {jobId} error: {e}")
+            self.results[taskId] = {"status": "error", "error": str(e)}
+            self.status[taskId] = "error"
+            print(f"[JobManager] Job {taskId} error: {e}")
         finally:
-            if jobId in self.running_jobs:
-                del self.running_jobs[jobId]
+            if taskId in self.running_jobs:
+                del self.running_jobs[taskId]
             self.try_run_next()
 
-    def cancel_job(self, jobId):
+    def cancel_job(self, taskId):
         # ถ้า job กำลังรันอยู่ → terminate
-        if jobId in self.running_jobs:
-            p = self.running_jobs[jobId]["process"]
-            args = self.running_jobs[jobId]["args"]
-            print(f"[JobManager] Terminate running job {jobId} with args: {args}")
+        if taskId in self.running_jobs:
+            p = self.running_jobs[taskId]["process"]
+            args = self.running_jobs[taskId]["args"]
+            print(f"[JobManager] Terminate running job {taskId} with args: {args}")
             p.terminate()
             p.join()
-            self.status[jobId] = "cancelled"
-            del self.running_jobs[jobId]
+            self.status[taskId] = "cancelled"
+            del self.running_jobs[taskId]
             self.try_run_next()  # รัน job ต่อจาก queue
             return args
 
-    def get_status(self, jobId):
-        return self.status.get(jobId, "pending")
+    def get_status(self, taskId):
+        return self.status.get(taskId, "pending")
 
-    def get_result(self, jobId):
-        return self.results.get(jobId)
+    def get_result(self, taskId):
+        return self.results.get(taskId)
 
 # ---------- FastAPI endpoints ----------
 @app.post("/ask")
 async def ask(request: Request):
     data = await request.json()
     args = data.get("args", [])
-    jobId = data.get("jobId") or str(time.time())
-    app.job_manager.add_job(jobId, args)
-    return {"jobId": jobId, "status": "queued", "args": args}
+    taskId = data.get("taskId") or str(time.time())
+    app.job_manager.add_job(taskId, args)
+    return {"taskId": taskId, "status": "queued", "args": args}
 
-@app.post("/cancel/{jobId}")
-async def cancel(jobId: str):
-    args = app.job_manager.cancel_job(jobId)
-    status = app.job_manager.get_status(jobId)
-    log(f"[JobManager] Cancel job {jobId} with args: {args}, status: {status}")
-    return {"jobId": jobId, "args": args, "status": status}
+@app.post("/cancel/{taskId}")
+async def cancel(taskId: str):
+    args = app.job_manager.cancel_job(taskId)
+    status = app.job_manager.get_status(taskId)
+    log(f"[JobManager] Cancel job {taskId} with args: {args}, status: {status}")
+    return {"taskId": taskId, "args": args, "status": status}
 
-@app.get("/status/{jobId}")
-async def status(jobId: str):
-    args = app.job_manager.cancel_job(jobId)
-    res = app.job_manager.get_result(jobId)
-    status = app.job_manager.get_status(jobId)
+@app.get("/status/{taskId}")
+async def status(taskId: str):
+    args = app.job_manager.cancel_job(taskId)
+    res = app.job_manager.get_result(taskId)
+    status = app.job_manager.get_status(taskId)
     if res:
         return res
-    return {"jobId": jobId, "args": args, "status": status}
+    return {"taskId": taskId, "args": args, "status": status}
 
 # ---------- Main ----------
 if __name__ == "__main__":

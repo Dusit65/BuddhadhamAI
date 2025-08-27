@@ -31,6 +31,7 @@ model chat_tb {
 model qNa_tb {
   qNaId     Int       @id @default(autoincrement())
   chatId    Int
+  taskId    String    @db.Char(18)
   qNaWords  String    @db.NVarChar(MAX)
   qNaType   String    @db.Char(1)
   createdAt DateTime  @default(now())

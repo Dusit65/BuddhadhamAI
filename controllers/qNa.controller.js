@@ -20,13 +20,13 @@ exports.ask = async (req, res) => {
       ],
     });
 
-    const { jobId } = resData.data;
-    console.log("Job queued:", jobId);
+    const { taskId } = resData.data;
+    console.log("Job queued:", taskId);
 
     // 2. คืนค่าไปก่อนเลย (ไม่ต้องรอให้รันเสร็จ)
     return res.status(202).json({
       message: "Job queued",
-      jobId: jobId,
+      taskId: taskId,
       chatId,
       question,
       ...(k != null ? { k } : {}),
@@ -43,20 +43,20 @@ exports.ask = async (req, res) => {
 };
 
 exports.cancel = async (req, res) => {
-  const { jobId } = req.body;
+  const { taskId } = req.body;
 
-  if (!jobId) {
-    return res.status(400).json({ message: "jobId is required" });
+  if (!taskId) {
+    return res.status(400).json({ message: "taskId is required" });
   }
 
   try {
     // ส่ง request ไป main.py
-    const response = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/cancel/" + jobId);
+    const response = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/cancel/" + taskId);
 
     // ส่งผลกลับ client
     return res.status(200).json({
       message: "Cancel request sent",
-      jobId,
+      taskId,
       mainResponse: response.data,
     });
 
