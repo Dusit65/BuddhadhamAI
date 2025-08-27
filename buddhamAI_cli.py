@@ -29,10 +29,10 @@ try:
     end = None
     STATUS_FILE = "embed_status.json"
     
-    if not os.path.exists(log_file):
-        open(log_file, "w").close()
-    with open(log_file, "r+") as f:
-        f.truncate(0)
+    # if not os.path.exists(log_file):
+    #     open(log_file, "w").close()
+    # with open(log_file, "r+") as f:
+    #     f.truncate(0)
 
     def get_installed_models():
         # ลองใช้ --json ก่อน

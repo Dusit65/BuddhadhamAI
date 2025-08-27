@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Route definitions
 router.post("/ask", qNaCtrl.ask);
+router.post("/cancel", qNaCtrl.cancel);
 router.delete("/:qNaId", qNaCtrl.deleteqNa);
 
 module.exports = router;

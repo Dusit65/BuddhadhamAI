@@ -1,7 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { execFile } = require("child_process");
-const path = require("path");
 const axios = require("axios");
 
 // ถาม
@@ -13,33 +11,61 @@ exports.ask = async (req, res) => {
       return res.status(400).json({ message: "Question is required." });
     }
 
-    // ส่ง request ไปที่ main.py API
-    const response = await axios.post("http://127.0.0.1:8000/ask", {
-      args: [question, ...(k != null ? ["-k", k.toString()] : []), ...(d != null ? ["-d", d.toString()] : [])]
+    // 1. ส่ง request ไป main.py เพื่อสร้างงาน
+    const resData = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/ask", {
+      args: [
+        question,
+        ...(k != null ? ["-k", k.toString()] : []),
+        ...(d != null ? ["-d", d.toString()] : []),
+      ],
     });
 
-    const data = response.data;
-    console.log("Response from main.py:", data.data.answer);
-    // บันทึก Q/A ลง database
-    const savedQuestion = await prisma.qNa_tb.create({
-      data: { chatId, qNaWords: question, qNaType: "Q" },
-    });
-    const savedAnswer = await prisma.qNa_tb.create({
-      data: { chatId, qNaWords: data.data.answer, qNaType: "A" },
-    });
+    const { jobId } = resData.data;
+    console.log("Job queued:", jobId);
 
-    return res.status(201).json({
-      message: "Question and Answer saved successfully",
-      data: { savedQuestion, savedAnswer },
-      answer: data.data.answer,
-      references: data.data.references,
-      rejected: data.data.rejected,
-      duration: data.data.duration,
+    // 2. คืนค่าไปก่อนเลย (ไม่ต้องรอให้รันเสร็จ)
+    return res.status(202).json({
+      message: "Job queued",
+      jobId: jobId,
+      chatId,
+      question,
+      ...(k != null ? { k } : {}),
+      ...(d != null ? { d } : {}),
     });
 
   } catch (error) {
     console.error("Unexpected error:", error);
-    res.status(500).json({ message: "Unexpected error: " + error.message, stack: error.stack });
+    res.status(500).json({
+      message: "Unexpected error: " + error.message,
+      stack: error.stack,
+    });
+  }
+};
+
+exports.cancel = async (req, res) => {
+  const { jobId } = req.body;
+
+  if (!jobId) {
+    return res.status(400).json({ message: "jobId is required" });
+  }
+
+  try {
+    // ส่ง request ไป main.py
+    const response = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/cancel/" + jobId);
+
+    // ส่งผลกลับ client
+    return res.status(200).json({
+      message: "Cancel request sent",
+      jobId,
+      mainResponse: response.data,
+    });
+
+  } catch (error) {
+    console.error("Error cancelling job:", error.message);
+    return res.status(500).json({
+      message: "Failed to cancel job",
+      error: error.message,
+    });
   }
 };
 
