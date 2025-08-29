@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -31,7 +30,7 @@ model chat_tb {
 model qNa_tb {
   qNaId     Int       @id @default(autoincrement())
   chatId    Int
-  taskId    String    @db.Char(18)
+  taskId    String    @db.Char(13)
   qNaWords  String    @db.NVarChar(MAX)
   qNaType   String    @db.Char(1)
   createdAt DateTime  @default(now())

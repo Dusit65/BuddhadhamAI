@@ -18,6 +18,8 @@ AI_SERVER_PORT = 0000
 ```
 
 sqlcmd -S <ServerIP> -U <Username> -P <Password>
+  
+output   = "../generated/prisma" If you have ยพรหทฟ problems, remove this from schema.prisma
 npx prisma migrate reset --force
 npx prisma migrate dev --name init
 
@@ -29,6 +31,7 @@ pip install faiss-cpu
 pip install numpy
 pip install ollama
 
-#note
-- เช็ก server ล่ม
+#to do list
+- API เช็ก task ล่ม
 - เช็กคำตอบกลับจาก AI
+- บันทึก A ลง DB

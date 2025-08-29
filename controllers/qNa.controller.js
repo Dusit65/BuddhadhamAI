@@ -1,38 +1,52 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const axios = require("axios");
+const { app, server, io, chatSockets  } = require("../server");
 
 // ถาม
 exports.ask = async (req, res) => {
   try {
-    const { chatId, question, k, d } = req.body;
+    const { chatId, question, k, d, webhookUrl } = req.body;
 
     if (!question) {
       return res.status(400).json({ message: "Question is required." });
     }
 
     // 1. ส่ง request ไป main.py เพื่อสร้างงาน
-    const resData = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/ask", {
-      args: [
-        question,
-        ...(k != null ? ["-k", k.toString()] : []),
-        ...(d != null ? ["-d", d.toString()] : []),
-      ],
+    const resData = await axios.post(
+      "http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/ask",
+      {
+        args: [
+          question,
+          ...(k != null ? ["-k", k.toString()] : []),
+          ...(d != null ? ["-d", d.toString()] : []),
+        ],
+      }
+    );
+
+    console.log("Response from AI server:", resData.data);
+    const { taskId } = resData.data;
+
+    const savedRecordQuestion = await prisma.qNa_tb.create({
+      data: {
+        chatId: chatId,
+        taskId: taskId,
+        qNaWords: question,
+        qNaType: "Q",
+      },
     });
 
-    const { taskId } = resData.data;
-    console.log("Job queued:", taskId);
-
-    // 2. คืนค่าไปก่อนเลย (ไม่ต้องรอให้รันเสร็จ)
-    return res.status(202).json({
-      message: "Job queued",
+    // 2. คืนค่าไปก่อน (ไม่ต้องรอให้รันเสร็จ)
+    res.status(202).json({
+      data: savedRecordQuestion,
+      message: "Task queued",
       taskId: taskId,
-      chatId,
-      question,
+      chatId: savedRecordQuestion.chatId,
+      question: resData.data.args[0],
       ...(k != null ? { k } : {}),
       ...(d != null ? { d } : {}),
     });
-
+    
   } catch (error) {
     console.error("Unexpected error:", error);
     res.status(500).json({
@@ -40,6 +54,15 @@ exports.ask = async (req, res) => {
       stack: error.stack,
     });
   }
+};
+
+exports.notifyWebhook = (chatId, payload) => {
+  const chatSockets = app.get("chatSockets"); // เอา map มาจาก server
+  const sockets = chatSockets[chatId] || [];
+  sockets.forEach(socketId => {
+    io.to(socketId).emit("task_done", payload);
+  });
+  console.log(`[Socket] Notified chat ${chatId}:`, payload);
 };
 
 exports.cancel = async (req, res) => {
