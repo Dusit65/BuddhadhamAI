@@ -259,6 +259,7 @@ try:
                 return data  # ไม่ exit ตรงนี้ เพื่อให้ pool ใช้ได้
 
         index, metadata = init_bot()
+        # result = {"answer": "นี่คือคำตอบสำหรับการทดสอบ", "references": "ไม่มี", "duration": 0} # for test only
         result = ask(message, index, metadata, top_k=top_k, max_distance=max_distance)
 
         data = {"data": result}
