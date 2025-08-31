@@ -6,6 +6,8 @@ from fastapi import FastAPI, Request
 from debugger import log
 import uvicorn
 import dotenv
+import sys
+import BuddhamAI_cli
 
 dotenv.load_dotenv()
 
@@ -37,12 +39,13 @@ class TaskManager:
 
     def _background_loop(self):
         while not self._stop:
+            # log(self.queue)
             if self.queue:
                 log("queue: ", self.queue)
-                taskid = self.queue[0]["taskId"]
-                args = self.queue[0]["args"]
-                self.queue.pop(0)
-                self._run_task(taskid, args)
+                # taskid = self.queue[0]["taskId"]
+                # args = self.queue[0]["args"]
+                # self.queue.pop(0)
+                self.try_run_next()
             time.sleep(1)
 
     def stop(self):
@@ -51,37 +54,52 @@ class TaskManager:
     def add_task(self, taskId, args):
         self.queue.append({"taskId": taskId, "args": args})
         self.status[taskId] = "queued"
+        self.try_run_next()
+
+    def try_run_next(self):
+        # รัน task จนกว่าจะถึง max_process
+        while len(self.running_tasks) < self.max_process and self.queue:
+            task = self.queue.pop(0)
+            taskId, args = task["taskId"], task["args"]
+            p = Process(target=self._run_task, args=(taskId, args))
+            p.start()
+            self.running_tasks[taskId] = {"process": p, "args": args}
+            self.status[taskId] = "running"
+            print(f"[TaskManager] Start task {taskId} with args: {args}")
 
     def _run_task(self, taskId, args):
         try:
-            import sys, BuddhamAI_cli, requests, os
             sys.argv = ["BuddhamAI_cli.py"] + args
             result = BuddhamAI_cli.ask_cli(args)
             self.results[taskId] = {"status": "done", "data": result}
             self.status[taskId] = "done"
-            log(f"[TaskManager] task {taskId} done")
-
-            # ส่ง webhook
-            webhook_url = f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}/qNa/webhook"
-            payload = {
-                "taskId": taskId,
-                "status": "done",
-                "result": result,
-                "question": args[0] if args else None
-            }
-            try:
-                resp = requests.post(webhook_url, json=payload, timeout=5)
-                log(f"[TaskManager] Webhook sent: {resp.status_code}")
-            except Exception as e:
-                log(f"[TaskManager] Failed to send webhook: {e}")
-
+            print(f"[TaskManager] Job {taskId} done")
         except Exception as e:
             self.results[taskId] = {"status": "error", "error": str(e)}
             self.status[taskId] = "error"
-            log(f"[TaskManager] task {taskId} error: {e}")
+            print(f"[TaskManager] Job {taskId} error: {e}")
         finally:
             if taskId in self.running_tasks:
                 del self.running_tasks[taskId]
+            self.try_run_next()
+                
+    def get_status(self, taskId):
+        return self.status.get(taskId, "pending")
+
+    def get_result(self, taskId):
+        return self.results.get(taskId)
+
+    def cancel_task(self, taskId):
+        # ถ้า task กำลังรันอยู่ → terminate
+        if taskId in self.running_tasks:
+            p = self.running_tasks[taskId]["process"]
+            args = self.running_tasks[taskId]["args"]
+            print(f"[TaskManager] Terminate running task {taskId} with args: {args}")
+            p.terminate()
+            p.join()
+            self.status[taskId] = "cancelled"
+            del self.running_tasks[taskId]
+            return args
 
 # ---------- FastAPI endpoints ----------
 @app.post("/ask")
@@ -101,7 +119,7 @@ async def cancel(taskId: str):
 
 @app.get("/status/{taskId}")
 async def status(taskId: str):
-    args = app.task_manager.cancel_task(taskId)
+    args = app.task_manager.get_result(taskId)
     res = app.task_manager.get_result(taskId)
     status = app.task_manager.get_status(taskId)
     if res:
