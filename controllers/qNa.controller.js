@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const axios = require("axios");
-const { app, server, io, chatSockets  } = require("../server");
+const { app, server, io, chatSockets } = require("../server");
 
 // ถาม
 exports.ask = async (req, res) => {
@@ -18,8 +18,8 @@ exports.ask = async (req, res) => {
       {
         args: [
           question,
-          ...(k != null ? ["-k", k.toString()] : []),
-          ...(d != null ? ["-d", d.toString()] : []),
+          ...(k != null ? [`-k ${k}`] : []),
+          ...(d != null ? [`-d ${d}`] : []),
         ],
       }
     );
@@ -29,7 +29,8 @@ exports.ask = async (req, res) => {
 
     const savedRecordQuestion = await prisma.qNa_tb.create({
       data: {
-        chatId: chatId,
+        // chatId: chatId,
+        chatId: 1,
         taskId: taskId,
         qNaWords: question,
         qNaType: "Q",
@@ -46,7 +47,7 @@ exports.ask = async (req, res) => {
       ...(k != null ? { k } : {}),
       ...(d != null ? { d } : {}),
     });
-    
+
   } catch (error) {
     console.error("Unexpected error:", error);
     res.status(500).json({

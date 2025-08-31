@@ -1,7 +1,9 @@
 # main.py
+import socketio
 import os
 import time
 from multiprocessing import Process, Manager
+import threading
 from fastapi import FastAPI, Request
 from debugger import log
 import uvicorn
@@ -18,12 +20,11 @@ if not os.path.exists(log_file):
     open(log_file, "w").close()
 with open(log_file, "r+") as f:
     f.truncate(0)
+    
+socket = socketio.Client()
+socket.connect(f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}")
 
 # ---------- Task Manager ----------
-import threading
-import time
-from multiprocessing import Process, Manager
-
 class TaskManager:
     def __init__(self, max_process=1):
         manager = Manager()
@@ -42,9 +43,11 @@ class TaskManager:
             # log(self.queue)
             if self.queue:
                 log("queue: ", self.queue)
+                log("status: ", self.status)
                 # taskid = self.queue[0]["taskId"]
                 # args = self.queue[0]["args"]
-                # self.queue.pop(0)
+                if(self.status[0] == "done"):
+                    self.queue.pop(0)
                 self.try_run_next()
             time.sleep(1)
 
@@ -65,7 +68,7 @@ class TaskManager:
             p.start()
             self.running_tasks[taskId] = {"process": p, "args": args}
             self.status[taskId] = "running"
-            print(f"[TaskManager] Start task {taskId} with args: {args}")
+            log(f"[TaskManager] Start task {taskId} with args: {args}")
 
     def _run_task(self, taskId, args):
         try:
@@ -73,11 +76,13 @@ class TaskManager:
             result = BuddhamAI_cli.ask_cli(args)
             self.results[taskId] = {"status": "done", "data": result}
             self.status[taskId] = "done"
-            print(f"[TaskManager] Job {taskId} done")
+            log(f"[TaskManager] Task {taskId} done")
+
+            socket.emit("message", "done")
         except Exception as e:
             self.results[taskId] = {"status": "error", "error": str(e)}
             self.status[taskId] = "error"
-            print(f"[TaskManager] Job {taskId} error: {e}")
+            log(f"[TaskManager] Job {taskId} error: {e}")
         finally:
             if taskId in self.running_tasks:
                 del self.running_tasks[taskId]
@@ -94,7 +99,7 @@ class TaskManager:
         if taskId in self.running_tasks:
             p = self.running_tasks[taskId]["process"]
             args = self.running_tasks[taskId]["args"]
-            print(f"[TaskManager] Terminate running task {taskId} with args: {args}")
+            log(f"[TaskManager] Terminate running task {taskId} with args: {args}")
             p.terminate()
             p.join()
             self.status[taskId] = "cancelled"
