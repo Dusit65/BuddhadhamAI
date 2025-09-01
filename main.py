@@ -20,9 +20,15 @@ if not os.path.exists(log_file):
     open(log_file, "w").close()
 with open(log_file, "r+") as f:
     f.truncate(0)
-    
+
 socket = socketio.Client()
 socket.connect(f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}")
+
+def socket_emit(event, data):
+    try:
+        socket.emit(event, data)
+    except Exception as e:
+        log(f"[Socket] Emit error: {e}")
 
 # ---------- Task Manager ----------
 class TaskManager:
@@ -43,12 +49,10 @@ class TaskManager:
             # log(self.queue)
             if self.queue:
                 log("queue: ", self.queue)
-                log("status: ", self.status)
-                # taskid = self.queue[0]["taskId"]
-                # args = self.queue[0]["args"]
-                if(self.status[0] == "done"):
-                    self.queue.pop(0)
-                self.try_run_next()
+                # log("status: ", self.status)
+                task = self.queue.pop(0)
+                taskId, args = task["taskId"], task["args"]
+                self._run_task(taskId, args)
             time.sleep(1)
 
     def stop(self):
@@ -57,28 +61,16 @@ class TaskManager:
     def add_task(self, taskId, args):
         self.queue.append({"taskId": taskId, "args": args})
         self.status[taskId] = "queued"
-        self.try_run_next()
-
-    def try_run_next(self):
-        # รัน task จนกว่าจะถึง max_process
-        while len(self.running_tasks) < self.max_process and self.queue:
-            task = self.queue.pop(0)
-            taskId, args = task["taskId"], task["args"]
-            p = Process(target=self._run_task, args=(taskId, args))
-            p.start()
-            self.running_tasks[taskId] = {"process": p, "args": args}
-            self.status[taskId] = "running"
-            log(f"[TaskManager] Start task {taskId} with args: {args}")
 
     def _run_task(self, taskId, args):
         try:
             sys.argv = ["BuddhamAI_cli.py"] + args
+            self.status[taskId] = "running"
             result = BuddhamAI_cli.ask_cli(args)
             self.results[taskId] = {"status": "done", "data": result}
             self.status[taskId] = "done"
             log(f"[TaskManager] Task {taskId} done")
-
-            socket.emit("message", "done")
+            socket_emit("message", result['data']['answer'])
         except Exception as e:
             self.results[taskId] = {"status": "error", "error": str(e)}
             self.status[taskId] = "error"
@@ -86,7 +78,6 @@ class TaskManager:
         finally:
             if taskId in self.running_tasks:
                 del self.running_tasks[taskId]
-            self.try_run_next()
                 
     def get_status(self, taskId):
         return self.status.get(taskId, "pending")
