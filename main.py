@@ -1,15 +1,15 @@
 # main.py
-import socketio
 import os
 import time
-from multiprocessing import Process, Manager
 import threading
+from queue import Queue
 from fastapi import FastAPI, Request
-from debugger import log
-import uvicorn
+import socketio
 import dotenv
 import sys
 import BuddhamAI_cli
+from debugger import log
+import uvicorn
 
 dotenv.load_dotenv()
 
@@ -18,8 +18,6 @@ app = FastAPI()
 log_file = "buddhamAI_cli.log"
 if not os.path.exists(log_file):
     open(log_file, "w").close()
-with open(log_file, "r+") as f:
-    f.truncate(0)
 
 socket = socketio.Client()
 socket.connect(f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}")
@@ -32,28 +30,38 @@ def socket_emit(event, data):
 
 # ---------- Task Manager ----------
 class TaskManager:
-    def __init__(self, max_process=1):
-        manager = Manager()
+    def __init__(self, max_thread=1):
         self.queue = []  # list ของ dict {taskId, args}
-        self.running_tasks = {}  # taskId -> {"process": Process, "args": args}
-        self.max_process = max_process
-        self.results = manager.dict()
-        self.status = manager.dict()
+        self.running_tasks = {}  # taskId -> {"thread": Thread, "args": args, "stop_flag": Event}
+        self.max_thread = max_thread
+        self.results = {}  # taskId -> result dict
+        self.status = {}   # taskId -> status string
         self._stop = False
 
-        # start background thread
+        self.message_queue = Queue()  # สำหรับส่ง message ไป main thread
         threading.Thread(target=self._background_loop, daemon=True).start()
+        threading.Thread(target=self._socket_loop, daemon=True).start()
 
     def _background_loop(self):
         while not self._stop:
-            # log(self.queue)
-            if self.queue:
-                log("queue: ", self.queue)
-                # log("status: ", self.status)
+            # start new tasks ถ้ายังไม่เต็ม max_thread
+            while self.queue and len(self.running_tasks) < self.max_thread:
                 task = self.queue.pop(0)
                 taskId, args = task["taskId"], task["args"]
-                self._run_task(taskId, args)
+                stop_flag = threading.Event()
+                t = threading.Thread(target=self._run_task_thread, args=(taskId, args, stop_flag))
+                self.running_tasks[taskId] = {"thread": t, "args": args, "stop_flag": stop_flag}
+                self.status[taskId] = "running"
+                log(f"[TaskManager] Start task {taskId} with args: {args}")
+                t.start()
             time.sleep(1)
+
+    def _socket_loop(self):
+        while not self._stop:
+            while not self.message_queue.empty():
+                msg = self.message_queue.get()
+                socket_emit("message", msg)
+            time.sleep(0.1)
 
     def stop(self):
         self._stop = True
@@ -62,23 +70,26 @@ class TaskManager:
         self.queue.append({"taskId": taskId, "args": args})
         self.status[taskId] = "queued"
 
-    def _run_task(self, taskId, args):
+    def _run_task_thread(self, taskId, args, stop_flag):
         try:
             sys.argv = ["BuddhamAI_cli.py"] + args
-            self.status[taskId] = "running"
             result = BuddhamAI_cli.ask_cli(args)
-            self.results[taskId] = {"status": "done", "data": result}
+            if stop_flag.is_set():
+                self.status[taskId] = "cancelled"
+                log(f"[TaskManager] Task {taskId} was cancelled before finishing")
+                return
+            self.results[taskId] = {"status": "done", "data": result, "args": args}
             self.status[taskId] = "done"
             log(f"[TaskManager] Task {taskId} done")
-            socket_emit("message", result['data']['answer'])
+            self.message_queue.put(result['data']['answer']+'\n\nใช้เวลา '+ str(result["data"]["duration"]))
         except Exception as e:
-            self.results[taskId] = {"status": "error", "error": str(e)}
+            self.results[taskId] = {"status": "error", "error": str(e), "args": args}
             self.status[taskId] = "error"
-            log(f"[TaskManager] Job {taskId} error: {e}")
+            log(f"[TaskManager] Task {taskId} error: {e}")
         finally:
             if taskId in self.running_tasks:
                 del self.running_tasks[taskId]
-                
+
     def get_status(self, taskId):
         return self.status.get(taskId, "pending")
 
@@ -86,16 +97,23 @@ class TaskManager:
         return self.results.get(taskId)
 
     def cancel_task(self, taskId):
-        # ถ้า task กำลังรันอยู่ → terminate
+        # ถ้า task กำลังรันอยู่ → set stop_flag
         if taskId in self.running_tasks:
-            p = self.running_tasks[taskId]["process"]
+            stop_flag = self.running_tasks[taskId]["stop_flag"]
+            stop_flag.set()
             args = self.running_tasks[taskId]["args"]
-            log(f"[TaskManager] Terminate running task {taskId} with args: {args}")
-            p.terminate()
-            p.join()
             self.status[taskId] = "cancelled"
-            del self.running_tasks[taskId]
+            log(f"[TaskManager] Cancel running task {taskId} with args: {args}")
             return args
+        # ถ้า task อยู่ใน queue → ลบออก
+        for i, task in enumerate(self.queue):
+            if task["taskId"] == taskId:
+                args = task["args"]
+                self.queue.pop(i)
+                self.status[taskId] = "cancelled"
+                log(f"[TaskManager] Cancel queued task {taskId} with args: {args}")
+                return args
+        return None
 
 # ---------- FastAPI endpoints ----------
 @app.post("/ask")
@@ -110,20 +128,28 @@ async def ask(request: Request):
 async def cancel(taskId: str):
     args = app.task_manager.cancel_task(taskId)
     status = app.task_manager.get_status(taskId)
-    log(f"[TaskManager] Cancel task {taskId} with args: {args}, status: {status}")
     return {"taskId": taskId, "args": args, "status": status}
 
 @app.get("/status/{taskId}")
 async def status(taskId: str):
-    args = app.task_manager.get_result(taskId)
     res = app.task_manager.get_result(taskId)
-    status = app.task_manager.get_status(taskId)
-    if res:
-        return res
-    return {"taskId": taskId, "args": args, "status": status}
+    status_val = app.task_manager.get_status(taskId)
+    args = None
+
+    if taskId in app.task_manager.running_tasks:
+        args = app.task_manager.running_tasks[taskId]["args"]
+    elif res:
+        args = res.get("args")
+    else:
+        for task in app.task_manager.queue:
+            if task["taskId"] == taskId:
+                args = task["args"]
+                break
+
+    return res if res else {"taskId": taskId, "args": args, "status": status_val}
 
 # ---------- Main ----------
 if __name__ == "__main__":
     process_count = int(os.getenv("processes", 1))
-    app.task_manager = TaskManager(max_process=process_count)
+    app.task_manager = TaskManager(max_thread=process_count)
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("AI_SERVER_PORT", 8000)))
