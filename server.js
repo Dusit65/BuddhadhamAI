@@ -52,7 +52,7 @@ io.on('connect', (socket) => {
 
     socket.on('message', (msg) => {
             io.emit('message', msg);
-            console.log('Message received:', msg);
+            // console.log('Message received:', msg);
     })
 });
 

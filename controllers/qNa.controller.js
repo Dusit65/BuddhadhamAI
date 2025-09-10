@@ -30,7 +30,7 @@ exports.ask = async (req, res) => {
     const savedRecordQuestion = await prisma.qNa_tb.create({
       data: {
         // chatId: chatId,
-        chatId: chatId,
+        chatId: 1,
         taskId: taskId,
         qNaWords: question,
         qNaType: "Q",
@@ -57,13 +57,39 @@ exports.ask = async (req, res) => {
   }
 };
 
-exports.notifyWebhook = (chatId, payload) => {
-  const chatSockets = app.get("chatSockets"); // เอา map มาจาก server
-  const sockets = chatSockets[chatId] || [];
-  sockets.forEach(socketId => {
-    io.to(socketId).emit("task_done", payload);
-  });
-  console.log(`[Socket] Notified chat ${chatId}:`, payload);
+exports.saveAnswer = async (req, res) => {
+  try {
+    const { taskId, chatId, qNaWords } = req.body;
+
+    if (!taskId) {
+      return res.status(400).json({ message: "taskId is required." });
+    }
+
+    if (!chatId) {
+      return res.status(400).json({ message: "chatId is required." });
+    }
+
+    if (!qNaWords) {
+      return res.status(400).json({ message: "qNaWords is required." });
+    }
+
+    // บันทึกคำตอบ AI ลง qNa_tb
+    const savedAnswer = await prisma.qNa_tb.create({
+      data: {
+        chatId: chatId,
+        taskId: taskId,
+        qNaWords: qNaWords,
+        qNaType: "A", // A = Answer
+      },
+    });
+
+    console.log("Saved AI answer:", savedAnswer);
+    return res.status(201).json({ message: "AI answer saved", data: savedAnswer });
+
+  } catch (err) {
+    console.error("Error saving AI answer:", err);
+    return res.status(500).json({ message: "Internal server error", error: err.message });
+  }
 };
 
 exports.cancel = async (req, res) => {
@@ -122,8 +148,9 @@ exports.getqNaByUserId = async (req, res) => {
 exports.getqNaByChatId = async (req, res) => {
   try {
     const chats = await prisma.qNa_tb.findMany({
-      where: {chatId: Number(req.params.chatId)
-       },
+      where: {
+        chatId: Number(req.params.chatId)
+      },
       orderBy: { createdAt: "asc" },
     });
     res.status(200).json({ message: "ดึงข้อความแชทของผู้ใช้สำเร็จ", data: chats });
