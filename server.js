@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 
 const chatRoutes = require("./routes/chat.route.js");
 const qNaRoutes = require("./routes/qNa.route.js");
+const userRoute = require("./routes/user.route");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use("/user", userRoute); 
 app.use("/chat", chatRoutes);
 app.use("/qNa", qNaRoutes);
 

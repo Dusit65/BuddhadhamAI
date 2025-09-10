@@ -30,7 +30,7 @@ exports.ask = async (req, res) => {
     const savedRecordQuestion = await prisma.qNa_tb.create({
       data: {
         // chatId: chatId,
-        chatId: 1,
+        chatId: chatId,
         taskId: taskId,
         qNaWords: question,
         qNaType: "Q",
@@ -110,6 +110,21 @@ exports.getqNaByUserId = async (req, res) => {
     const chats = await prisma.qNa_tb.findMany({
       where: { userId: Number(req.params.userId) },
       orderBy: { createdAt: "desc" },
+    });
+    res.status(200).json({ message: "ดึงข้อความแชทของผู้ใช้สำเร็จ", data: chats });
+  } catch (error) {
+    console.error("Error fetching chats by user: ", error);
+    res.status(500).json({ message: "Error: " + error.message });
+  }
+};
+
+// ดึงข้อความแชทของ user
+exports.getqNaByChatId = async (req, res) => {
+  try {
+    const chats = await prisma.qNa_tb.findMany({
+      where: {chatId: Number(req.params.chatId)
+       },
+      orderBy: { createdAt: "asc" },
     });
     res.status(200).json({ message: "ดึงข้อความแชทของผู้ใช้สำเร็จ", data: chats });
   } catch (error) {

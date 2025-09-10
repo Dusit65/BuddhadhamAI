@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 // สร้างแชทใหม่
 exports.createChat = async (req, res) => {
   try {
-    const { chatHeader } = req.body;
+    const { userId, chatHeader } = req.body;
 
     if (!chatHeader) {
       return res.status(400).json({ message: "Chat header is required." });
@@ -12,6 +12,7 @@ exports.createChat = async (req, res) => {
 
     const result = await prisma.chat_tb.create({
       data: {
+        userId,
         chatHeader,
       },
     });
@@ -42,11 +43,9 @@ exports.editChat = async (req, res) => {
     }
 
     const updatedData = {
-      chatMessage: req.body.chatMessage,
-      userId: Number(req.body.userId),
-      chatImage: "", // ไม่มีรูปภาพ
+      chatHeader: req.body.chatHeader.toString(),    
     };
-
+    console.log(updatedData);
     const result = await prisma.chat_tb.update({
       where: { chatId: Number(req.params.chatId) },
       data: updatedData,
@@ -99,7 +98,6 @@ exports.getChat = async (req, res) => {
         user: {
           select: {
             userName: true,
-            userImage: true,
           },
         },
       },
@@ -122,16 +120,24 @@ exports.getChat = async (req, res) => {
 // ลบข้อความแชท
 exports.deleteChat = async (req, res) => {
   try {
+    const chatId = Number(req.params.chatId);
+
     const chat = await prisma.chat_tb.findUnique({
-      where: { chatId: Number(req.params.chatId) },
+      where: { chatId },
     });
 
     if (!chat) {
       return res.status(404).json({ message: "ข้อความแชทไม่พบ" });
     }
 
+    // ลบ qNa_tb ที่อ้างอิง chatId ก่อน
+    await prisma.qNa_tb.deleteMany({
+      where: { chatId },
+    });
+
+    // ค่อยลบ chat_tb
     const deletedChat = await prisma.chat_tb.delete({
-      where: { chatId: Number(req.params.chatId) },
+      where: { chatId },
     });
 
     res.status(200).json({
