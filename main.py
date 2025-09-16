@@ -111,7 +111,7 @@ class TaskManager:
                 self.results[taskId] = {"status": "done", "data": data_obj, "args": args, "chatId": chatId}
                 self.status[taskId] = "done"
                 # socket_emit("message", str({data_obj['data']['answer']} + '\n\nใช้เวลา ' + {data_obj['data']['duration']}))
-                socket_emit("message", f"{data_obj['data'].get('answer', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}")
+                socket_emit("message", f"{data_obj['data'].get('answer', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}\n\ntaskId: {taskId}")
                 log(f"[TaskManager] Task {taskId} done")
 
                 # ส่งไป /qNa/answer
@@ -145,8 +145,9 @@ async def startup_event():
 @app.post("/ask")
 async def ask(request: Request):
     data = await request.json()
+    log(f"[API] /ask received: {data}")
     args = data.get("args", [])
-    chatId = data.get("chatId", 1)
+    chatId = data.get("chatId")
     taskId = str(int(time.time() * 1000))
     app.task_manager.add_task(taskId, args, chatId)
     return {"args": args, "taskId": taskId, "status": "queued", "chatId": chatId}

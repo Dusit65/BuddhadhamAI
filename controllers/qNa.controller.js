@@ -21,6 +21,7 @@ exports.ask = async (req, res) => {
           ...(k != null ? [`-k ${k}`] : []),
           ...(d != null ? [`-d ${d}`] : []),
         ],
+        chatId: chatId,
       }
     );
 
@@ -29,8 +30,7 @@ exports.ask = async (req, res) => {
 
     const savedRecordQuestion = await prisma.qNa_tb.create({
       data: {
-        // chatId: chatId,
-        chatId: 1,
+        chatId: parseInt(chatId),
         taskId: taskId,
         qNaWords: question,
         qNaType: "Q",
