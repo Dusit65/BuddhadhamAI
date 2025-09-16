@@ -1,9 +1,10 @@
-aiohttp
+aiohttp==3.12.15
 dotenv
 faiss
-fastapi
-numpy
-ollama
+fastapi==0.116.1
+numpy==2.3.2
+ollama==0.5.3
+pkg_resources
 socketio
-sqlalchemy
-uvicorn
+sqlalchemy==2.0.43
+uvicorn==0.35.0
