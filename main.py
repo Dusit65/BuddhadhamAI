@@ -60,13 +60,13 @@ class TaskManager:
     def get_result(self, taskId):
         return self.results.get(taskId)
 
-    async def send_to_qna_api(self, taskId, chatId, data_obj):
+    async def saveAnswer(self, taskId, chatId, data_obj):
         """ส่งคำตอบ AI ไป /qNa/answer"""
         api_url = f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}/qNa/answer"
         payload = {
             "taskId": taskId,
             "chatId": chatId,
-            "qNaWords": f"{data_obj['data'].get('answer', '')}\\n\\nใช้เวลา {data_obj['data'].get('duration', '')}"
+            "qNaWords": f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}"
         }
         try:
             async with aiohttp.ClientSession() as session:
@@ -111,13 +111,13 @@ class TaskManager:
                 self.results[taskId] = {"status": "done", "data": data_obj, "args": args, "chatId": chatId}
                 self.status[taskId] = "done"
                 # socket_emit("message", str({data_obj['data']['answer']} + '\n\nใช้เวลา ' + {data_obj['data']['duration']}))
-                socket_emit("message", f"{data_obj['data'].get('answer', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}\n\ntaskId: {taskId}")
+                socket_emit("message", f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}")
                 log(f"[TaskManager] Task {taskId} done")
 
                 # ส่งไป /qNa/answer
                 # log(f"dataObj: {data_obj}")
                 # log(f"answer: {data_obj['data']['answer']}" + '\n\nใช้เวลา ' + f" duration: {data_obj['data']['duration']}")
-                await self.send_to_qna_api(taskId, chatId, data_obj)
+                await self.saveAnswer(taskId, chatId, data_obj)
             else:
                 self.results[taskId] = {"status": "error", "error": err, "args": args, "chatId": chatId}
                 self.status[taskId] = "error"
