@@ -93,7 +93,7 @@ exports.saveAnswer = async (req, res) => {
 };
 
 exports.cancel = async (req, res) => {
-  const { taskId } = req.body;
+  const { taskId } = req.params;
 
   if (!taskId) {
     return res.status(400).json({ message: "taskId is required" });
