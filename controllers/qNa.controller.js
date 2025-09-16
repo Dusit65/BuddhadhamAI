@@ -107,7 +107,7 @@ exports.cancel = async (req, res) => {
     return res.status(200).json({
       message: "Cancel request sent",
       taskId,
-      mainResponse: response.data,
+      response: response.data,
     });
 
   } catch (error) {
