@@ -15,6 +15,7 @@ app = FastAPI()
 
 # ---------- Socket ----------
 socket = socketio.Client()
+# socket.connect(f"{os.getenv('API_SERVER')}")
 socket.connect(f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}")
 
 def socket_emit(event, data):
