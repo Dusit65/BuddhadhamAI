@@ -37,7 +37,6 @@ exports.ask = async (req, res) => {
       },
     });
 
-    // 2. คืนค่าไปก่อน (ไม่ต้องรอให้รันเสร็จ)
     res.status(202).json({
       data: savedRecordQuestion,
       message: "Task queued",
@@ -79,7 +78,7 @@ exports.saveAnswer = async (req, res) => {
         chatId: chatId,
         taskId: taskId,
         qNaWords: qNaWords,
-        qNaType: "A", // A = Answer
+        qNaType: "A",
       },
     });
 
@@ -100,24 +99,30 @@ exports.cancel = async (req, res) => {
   }
 
   try {
-    // ส่ง request ไป main.py
-    const response = await axios.post("http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/cancel/" + taskId);
+    const response = await axios.post(
+      "http://" + process.env.AI_SERVER + ":" + process.env.AI_SERVER_PORT + "/cancel/" + taskId
+    );
 
-    // ส่งผลกลับ client
-    return res.status(200).json({
-      message: "Cancel request sent",
-      taskId,
-      response: response.data,
+    // ลบข้อมูลใน qNa_tb โดยอ้างอิงจาก taskId
+    const deletedqNa = await prisma.qNa_tb.deleteMany({
+      where: { taskId: taskId },
     });
 
+    return res.status(200).json({
+      message: "Cancel successful",
+      taskId,
+      deleted: deletedqNa.count,
+      response: response.data,
+    });
   } catch (error) {
     console.error("Error cancelling job:", error.message);
     return res.status(500).json({
-      message: "Failed to cancel job",
+      message: "Failed to cancel or delete job",
       error: error.message,
     });
   }
 };
+
 
 // ดึงข้อความแชททั้งหมด
 exports.getAllqNa = async (req, res) => {
