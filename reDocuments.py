@@ -5,7 +5,7 @@ import ollama
 import json
 import numpy as np
 from debugger import log
-from db_handler import get_last_update_time, fetch_documents, load_embeddings_from_db, save_embeddings_to_db
+from db_handler import get_last_update_time, fetch_documents, save_embeddings_to_db
 
 EMB_PATH = "embeddings.npy"
 META_PATH = "metadata.pkl"
