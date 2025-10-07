@@ -154,7 +154,7 @@ try:
     def short_references(metadata):
         sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapter']))
         return ", ".join([
-            f"{d['bookName']} บท {d['chapter']}"
+            f"{d['bookName']} - {d['chapter']}"
             for d in sorted_docs
         ])
 

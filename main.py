@@ -118,7 +118,8 @@ class TaskManager:
                 # ส่งไป /qNa/answer
                 # log(f"dataObj: {data_obj}")
                 # log(f"answer: {data_obj['data']['answer']}" + '\n\nใช้เวลา ' + f" duration: {data_obj['data']['duration']}")
-                await self.saveAnswer(taskId, chatId, data_obj)
+                if chatId:
+                    await self.saveAnswer(taskId, chatId, data_obj)
             else:
                 self.results[taskId] = {"status": "error", "error": err, "args": args, "chatId": chatId}
                 self.status[taskId] = "error"
