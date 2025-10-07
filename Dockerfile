@@ -3,7 +3,7 @@ FROM python:3.13-slim-bookworm
 
 WORKDIR /app
 
-# 1️⃣ ติดตั้ง system dependencies + libraries ของ ODBC driver
+# Install system dependencies + libraries for ODBC driver
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg2 \
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     libc6 \
     && rm -rf /var/lib/apt/lists/*
 
-# 2️⃣ ติดตั้ง Microsoft ODBC Driver 18 + mssql-tools
+# Install Microsoft ODBC Driver 18 + mssql-tools
 RUN DEBIAN_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1) \
     && if ! echo "9 10 11 12" | grep -qw "$DEBIAN_VERSION"; then \
         echo "Debian $DEBIAN_VERSION not supported"; exit 1; \
@@ -31,12 +31,14 @@ RUN DEBIAN_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d 
 # Install Ollama CLI
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# 3️⃣ Copy & install Python dependencies
+# Copy & install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4️⃣ Copy project files
+# Copy project files
 COPY . .
 
-# 5️⃣ Run container
-CMD ["python", "main.py"]
+RUN chmod +x /app/start.sh
+
+# Run container
+CMD ["/app/start.sh"]
