@@ -147,14 +147,15 @@ try:
         if filtered_out_results:
             contexts = [f"{doc['content']}" for doc, _, _ in filtered_out_results]
             full_context = "\n".join(contexts)
+            log(metadata[0])
             log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _, _ in filtered_out_results])}")
             log(f"ข้อมูลอ้างอิงที่ถูกตัดออก:\n{full_context}")
 
         return results
     def short_references(metadata):
-        sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapter']))
+        sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapterName']))
         return ", ".join([
-            f"{d['bookName']} - {d['chapter']}"
+            f"{d['bookName']} - {d['chapterName']}"
             for d in sorted_docs
         ])
 
