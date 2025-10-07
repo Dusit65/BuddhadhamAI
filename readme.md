@@ -34,3 +34,5 @@ pip install ollama
 docker build -t buddham_ai .
 
 docker-compose up
+
+docker build -t buddham_ai . && docker-compose up -d
