@@ -23,6 +23,10 @@ def socket_emit(event, data):
         socket.emit(event, data)
     except Exception as e:
         log(f"[Socket] Emit error: {e}")
+        
+socket.on("connect", 
+          socket_emit("BuddhamAI", "Hello from BuddhamAI")
+        )
 
 # ---------- Task Manager ----------
 class TaskManager:
