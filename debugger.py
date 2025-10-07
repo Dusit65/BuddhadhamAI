@@ -1,6 +1,7 @@
 # debugger.py
 from datetime import datetime
 import os
+from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
@@ -14,14 +15,15 @@ load_dotenv()
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_SERVER = os.getenv("DB_SERVER")
-DB_PORT = os.getenv("DB_PORT", "1433")
+DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
-DB_DRIVER = os.getenv("DB_DRIVER", "ODBC Driver 18 for SQL Server").replace(" ", "+")
+DB_DRIVER = os.getenv("DB_DRIVER")
+DB_DRIVER_ENCODED = quote_plus(DB_DRIVER)
 
 conn_str = (
     f"mssql+pyodbc://{DB_USER}:{DB_PASSWORD}"
     f"@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
-    f"?driver={DB_DRIVER}&TrustServerCertificate=yes&charset=utf8"
+    f"?driver={DB_DRIVER_ENCODED}&TrustServerCertificate=yes&charset=utf8"
 )
 
 engine = create_engine(conn_str, pool_pre_ping=True)
