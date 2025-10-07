@@ -112,7 +112,7 @@ class TaskManager:
                 self.results[taskId] = {"status": "done", "data": data_obj, "args": args, "chatId": chatId}
                 self.status[taskId] = "done"
                 # socket_emit("message", str({data_obj['data']['answer']} + '\n\nใช้เวลา ' + {data_obj['data']['duration']}))
-                socket_emit("message", f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}")
+                socket_emit(taskId, f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}")
                 log(f"[TaskManager] Task {taskId} done")
 
                 # ส่งไป /qNa/answer
