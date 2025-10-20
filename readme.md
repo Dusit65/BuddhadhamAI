@@ -1,12 +1,14 @@
 .env
 ```
-DATABASE_URL = "sqlserver://127.0.0.1:1433;initial catalog=DBName;user=Username;password=P4ssw0rd;trustServerCertificate=true;charset=utf8mb4"
-conn_str= "mssql+pyodbc://Username:P4ssw0rd@127.0.0.1:1433/DBName?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+DATABASE_URL = "sqlserver://127.0.0.1:1433;initial catalog=DB_NAME;user=Username;password=P@assw0rd;trustServerCertificate=true;charset=utf8mb4"
+
+conn_str = "mssql+pyodbc://Username:P@assw0rd@127.0.0.1:1433/DB_NAME?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+
 DB_SERVER = "127.0.0.1"
 DB_PORT = "0000"
 DB_USER = "Username"
 DB_PASSWORD = "P4ssw0rd"
-DB_NAME = "DBName"
+DB_NAME = "DB_NAME"
 DB_DRIVER = "ODBC Driver 18 for SQL Server"
 
 API_SERVER = "127.0.0.1"
@@ -14,6 +16,9 @@ API_SERVER_PORT = 3000
 
 AI_SERVER = "127.0.0.1"
 AI_SERVER_PORT = 0000
+
+DEBUG = false
+DEBUG_TIME = 5
 ```
 
 sqlcmd -S <ServerIP> -U <Username> -P <Password>
