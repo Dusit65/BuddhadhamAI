@@ -8,10 +8,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from log_model import Base, Log
 from dotenv import load_dotenv
 
-# โหลด .env
+# loading .env
 load_dotenv()
 
-# อ่านค่า DB จาก env
+# read values from env
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_SERVER = os.getenv("DB_SERVER")
@@ -29,7 +29,7 @@ conn_str = (
 engine = create_engine(conn_str, pool_pre_ping=True)
 Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
-# สร้าง table ถ้ายังไม่มี
+# create table if not exists
 Base.metadata.create_all(engine)
 
 def log(*args):
@@ -53,14 +53,14 @@ def log_to_file(*args):
     log_message = " ".join(str(a) for a in args)
     log_file = "buddhamAI_cli.log"
     timestamp = datetime.now().strftime("%H:%M:%S %d-%m-%Y")
-    new_entry = f"[{timestamp}] {log_message}".encode("utf-8")  # encode เป็น bytes
+    new_entry = f"[{timestamp}] {log_message}".encode("utf-8")  # encode to bytes
 
     if os.path.exists(log_file):
         with open(log_file, "rb+") as f:
             f.seek(0, os.SEEK_END)
             size = f.tell()
             if size > 0:
-                # ตรวจสอบ byte สุดท้าย
+                # check last byte
                 f.seek(-1, os.SEEK_END)
                 last_char = f.read(1)
                 if last_char != b"\n":

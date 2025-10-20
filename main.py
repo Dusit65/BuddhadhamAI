@@ -31,7 +31,7 @@ socket.on("connect",
 # ---------- Task Manager ----------
 class TaskManager:
     def __init__(self):
-        self.queue = []           # list ของ {taskId, args, chatId}
+        self.queue = []           # list of {taskId, args, chatId}
         self.running_task = None
         self.results = {}         
         self.status = {}          
@@ -66,7 +66,7 @@ class TaskManager:
         return self.results.get(taskId)
 
     async def saveAnswer(self, taskId, chatId, data_obj):
-        """ส่งคำตอบ AI ไป /qNa/answer"""
+        """Send AI answer to /qNa/answer"""
         api_url = f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}/qNa/answer"
         payload = {
             "taskId": taskId,
@@ -115,7 +115,6 @@ class TaskManager:
 
                 self.results[taskId] = {"status": "done", "data": data_obj, "args": args, "chatId": chatId}
                 self.status[taskId] = "done"
-                # socket_emit("message", str({data_obj['data']['answer']} + '\n\nใช้เวลา ' + {data_obj['data']['duration']}))
                 message = f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}"
                 payload = {
                     "taskId": taskId,
@@ -126,9 +125,7 @@ class TaskManager:
                     socket_emit("debug", f"Test Task {taskId}")
                 log(f"[TaskManager] Task {taskId} done")
 
-                # ส่งไป /qNa/answer
-                # log(f"dataObj: {data_obj}")
-                # log(f"answer: {data_obj['data']['answer']}" + '\n\nใช้เวลา ' + f" duration: {data_obj['data']['duration']}")
+                # send to /qNa/answer
                 if chatId:
                     await self.saveAnswer(taskId, chatId, data_obj)
             else:
