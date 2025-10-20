@@ -32,14 +32,9 @@ try:
     end = None
     STATUS_FILE = "embed_status.json"
     debug_mode = os.getenv("DEBUG", "false").lower()
-    
-    # if not os.path.exists(log_file):
-    #     open(log_file, "w").close()
-    # with open(log_file, "r+") as f:
-    #     f.truncate(0)
 
     def get_installed_models():
-        # ลองใช้ --json ก่อน
+        # try --json
         try:
             result = subprocess.run(
             ["ollama", "list", "--json"],
@@ -49,9 +44,8 @@ try:
             if result.returncode == 0 and result.stdout.strip().startswith("["):
                 return [m["name"] for m in json.loads(result.stdout)]
         except Exception:
-            pass  # ถ้าพัง ให้ไปใช้วิธี parse ธรรมดา
-
-        # ใช้วิธีอ่านแบบข้อความปกติ
+            pass
+        # fallback to parsing text output
         result = subprocess.run(
             ["ollama", "list"],
             capture_output=True,
@@ -59,7 +53,7 @@ try:
         )
         lines = result.stdout.strip().split("\n")
         models = []
-        for line in lines[1:]:  # ข้าม header
+        for line in lines[1:]:  # skip header
             parts = line.split()
             if parts:
                 models.append(parts[0])
@@ -72,13 +66,13 @@ try:
 
             if missing_models:
                 for model in missing_models:
-                    log(f"📥 กำลังโหลดโมเดล {model} ...")
+                    log(f"📥 Installing {model} ...")
                     subprocess.run(["ollama", "pull", model], check=True)
-                    log(f"✅ โหลด {model} เสร็จแล้ว")
+                    log(f"✅ Finished installing {model}")
             else:
-                log("✅ มี Models ครบแล้ว")
+                log("✅ All models are present")
         except Exception:
-            log("❌ เกิดข้อผิดพลาด:\n" + traceback.format_exc())
+            log("❌ Error:\n" + traceback.format_exc())
             exit(1)
 
     def flatten_docs(raw):
@@ -95,23 +89,23 @@ try:
         return docs
 
     def load_embeddings_and_metadata():
-        log(f"ใช้ embeddings {required_models[1]}")
-        log(f"โหลด {EMB_PATH} และ {META_PATH}")
+        log(f"use embeddings {required_models[1]}")
+        log(f"Loading {EMB_PATH} and {META_PATH}")
         embeddings = np.load(EMB_PATH)
         with open(META_PATH, 'rb') as f:
             metadata = pickle.load(f)
         return embeddings, metadata
 
     def search(query, index, metadata, top_k, max_distance):
-        log(f"กำลังค้นหาข้อมูลอ้างอิงสำหรับ: {query} ด้วย top_k={top_k} และ max_distance={max_distance}")
+        log(f"Searching for references for: {query} with top_k={top_k} and max_distance={max_distance}")
 
-        # สร้าง embedding ของ query
+        # Create embedding for query
         q_emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']
         q_emb = np.array([q_emb], dtype='float32')
 
-        # ค้นหา nearest neighbors
+        # Search for nearest neighbors
         distances, ids = index.search(q_emb, top_k)
-        log(f"ค้นหา nearest neighbors เจอ {len(ids[0])} รายการ")
+        log(f"Found {len(ids[0])} nearest neighbors")
 
         results = []
         filtered_out_results = []
@@ -123,16 +117,16 @@ try:
             dist = distances[0][i]
             doc = metadata[idx]
 
-            # สร้าง hash จาก content
+            # create hash from content
             doc_hash = hashlib.md5(doc['content'].encode('utf-8')).hexdigest()
 
-            # ถ้าซ้ำหรือเกิน max_distance
+            # if dup or > max_distance
             if doc_hash in seen_docs or (max_distance is not None and dist > max_distance):
                 filtered_out_results.append((doc, dist, idx))
-                log(f"index={idx}, distance={dist:.4f} ถูกตัดออก")
+                log(f"index={idx}, distance={dist:.4f} removed")
                 continue
 
-            # เก็บผลลัพธ์พร้อม index และ distance
+            # store results with index and distance
             results.append({
                 "doc": doc,
                 "distance": dist,
@@ -140,17 +134,17 @@ try:
             })
             seen_docs.add(doc_hash)
 
-            # log index และ distance ของแต่ละรายการ
+            # log index and distance of each item
             log(f"index={idx}, distance={dist:.4f}")
 
-        log(f"ค้นหาข้อมูลอ้างอิง ได้ผลลัพธ์ {len(results)} รายการ ได้แก่ {short_references([r['doc'] for r in results])}")
+        log(f"Searching for references found {len(results)} items: {short_references([r['doc'] for r in results])}")
 
         if filtered_out_results:
             contexts = [f"{doc['content']}" for doc, _, _ in filtered_out_results]
             full_context = "\n".join(contexts)
             log(metadata[0])
-            log(f"ข้อมูลอ้างอิงที่ถูกตัดออกจำนวน {len(filtered_out_results)} รายการ ได้แก่ {short_references([doc for doc, _, _ in filtered_out_results])}")
-            log(f"ข้อมูลอ้างอิงที่ถูกตัดออก:\n{full_context}")
+            log(f"References {len(filtered_out_results)} items: {short_references([doc for doc, _, _ in filtered_out_results])}")
+            log(f"Filtered out references:\n{full_context}")
 
         return results
     def short_references(metadata):
@@ -176,7 +170,7 @@ try:
         full_context = "\n".join(contexts)
         prompt = f"""ข้อมูลอ้างอิง:\n{full_context}\nคำถาม: {query}"""
         model = 'gpt-oss:20b'
-        log(f"กำลังถามโมเดล: \"{model}\" ด้วย prompt:\n{prompt}")
+        log(f"Asking model: \"{model}\" with prompt:\n{prompt}")
         start = time.perf_counter()
         response = ollama.chat(
             model=model,
@@ -189,7 +183,7 @@ try:
         ref_text = short_references([r["doc"] for r in results])
         end = time.perf_counter()
         processing_time = format_duration(end - start)
-        log(f"ถามโมเดล \"{model}\" เสร็จสิ้น ใช้เวลา {processing_time}")
+        log(f"Asked \"{model}\" finished in {processing_time}")
         if not check_rejection_message(answer):
             return {
                 "answer": answer,
@@ -210,7 +204,7 @@ try:
             return json.load(f)["last_embed_time"]
 
     def init_bot():
-        log("เช็คอัพเดตข้อมูล")
+        log("Checking for data updates...")
         embeddings, metadata = ensure_embeddings_up_to_date()
         dimension = embeddings.shape[1]
         index = faiss.IndexFlatL2(dimension)
@@ -247,11 +241,11 @@ try:
 
 
     def ask_cli(argv=None):
-        log("เริ่มต้น BuddhamAI")
+        log("Starting BuddhamAI")
         if debug_mode == "false":
             check_and_pull_models(required_models)
 
-        if argv is None:  # ถ้าไม่ส่งมา → ใช้ sys.argv
+        if argv is None:  # if not provided → use sys.argv
             argv = sys.argv[1:]
 
         message, top_k, max_distance = parse_args(argv)
@@ -262,7 +256,7 @@ try:
                 json_str = json.dumps(data, ensure_ascii=False)
                 log(json_str)
                 print(json_str)
-                return data  # ไม่ exit ตรงนี้ เพื่อให้ pool ใช้ได้
+                return data  # return to main.py
 
         index, metadata = init_bot()
         if debug_mode == "true":
@@ -272,7 +266,7 @@ try:
             json_str = json.dumps(data, ensure_ascii=False)
             log(json_str)
             print(json_str)
-            return data  # return กลับไปให้ main.py ใช้
+            return data  # return to main.py
         
         result = ask(message, index, metadata, top_k=top_k, max_distance=max_distance)
 
@@ -280,7 +274,7 @@ try:
         json_str = json.dumps(data, ensure_ascii=False)
         log(json_str)
         print(json_str)
-        return data  # return กลับไปให้ main.py ใช้
+        return data  # return to main.py
 
     if __name__ == "__main__":
         ask_cli()
@@ -288,14 +282,14 @@ try:
 except Exception:
     err_msg = traceback.format_exc()
     try:
-        log("เกิดข้อผิดพลาด: " + err_msg)
-        data = {"answer": f"เกิดข้อผิดพลาด: {err_msg}", "status": 500}
+        log("Error: " + err_msg)
+        data = {"answer": f"Error: {err_msg}", "status": 500}
         json_str = json.dumps(data, ensure_ascii=False)
         log(json_str)
         print(json_str)
     except:
-        log("เกิดข้อผิดพลาด: " + err_msg)
-        data = {"answer": f"เกิดข้อผิดพลาด: {err_msg}", "status": 500}
+        log("Error: " + err_msg)
+        data = {"answer": f"Error: {err_msg}", "status": 500}
         json_str = json.dumps(data, ensure_ascii=False)
         log(json_str)
         print(json_str)
