@@ -2,6 +2,21 @@ version: "3.9"
 services:
   buddham_ai:
     image: buddham_ai:latest
+    secrets:
+      - AI_SERVER
+      - AI_SERVER_PORT
+      - API_SERVER
+      - API_SERVER_PORT
+      - conn_str
+      - DATABASE_URL
+      - DB_DRIVER
+      - DB_NAME
+      - DB_PASSWORD
+      - DB_PORT
+      - DB_SERVER
+      - DB_USER
+      - DEBUG
+      - DEBUG_TIME
     build: .
     env_file:
       - .env
