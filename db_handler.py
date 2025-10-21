@@ -9,11 +9,17 @@ from dotenv import load_dotenv
 # loading .env
 load_dotenv()  # read .env file in the same directory as the script
 
+def read_secret(secret_name, default=None):
+    secret_path = f"/run/secrets/{secret_name}"
+    if os.path.exists(secret_path):
+        with open(secret_path) as f:
+            return f.read().strip()
+    return os.getenv(secret_name, default)
+
 def get_engine():
-    # read values from env
-    conn_str = os.getenv("conn_str")
+    conn_str = read_secret("conn_str")
     if not conn_str:
-        raise ValueError("conn_str not set in .env")
+        raise ValueError("conn_str not set in Docker secret or .env")
     return create_engine(conn_str, pool_pre_ping=True)
 
 def fetch_documents():

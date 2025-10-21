@@ -14,9 +14,17 @@ dotenv.load_dotenv()
 app = FastAPI()
 
 # ---------- Socket ----------
+if os.path.exists("/run/secrets/api_server") and os.path.exists("/run/secrets/api_server_port"):
+    with open("/run/secrets/api_server") as f:
+        API_SERVER = f.read().strip()
+    with open("/run/secrets/api_server_port") as f:
+        API_SERVER_PORT = f.read().strip()
+else:
+    API_SERVER = str(os.getenv("API_SERVER"))
+    API_SERVER_PORT = str(os.getenv("API_SERVER_PORT"))
 socket = socketio.Client()
 # socket.connect(f"{os.getenv('API_SERVER')}")
-socket.connect(f"http://{os.getenv('API_SERVER')}:{os.getenv('API_SERVER_PORT')}")
+socket.connect(f"http://{API_SERVER}:{API_SERVER_PORT}")
 
 def socket_emit(event, data):
     try:

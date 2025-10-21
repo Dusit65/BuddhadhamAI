@@ -5,9 +5,11 @@ __pycache__/
 *.pyd
 
 # Environment files
+secrets/
 .env
 .env.*
 
 # etc
+.gitignore
 book_tb.txt
 chapter_tb.txt

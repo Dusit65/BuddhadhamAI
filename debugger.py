@@ -11,14 +11,21 @@ from dotenv import load_dotenv
 # loading .env
 load_dotenv()
 
+def read_secret(secret_name, default=None):
+    secret_path = f"/run/secrets/{secret_name}.txt"
+    if os.path.exists(secret_path):
+        with open(secret_path) as f:
+            return f.read().strip()
+    return os.getenv(secret_name, default)
+
 # read values from env
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_SERVER = os.getenv("DB_SERVER")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_DRIVER = os.getenv("DB_DRIVER")
-DB_DRIVER_ENCODED = quote_plus(DB_DRIVER)
+DB_USER = read_secret("DB_USER")
+DB_PASSWORD = read_secret("DB_PASSWORD")
+DB_SERVER = read_secret("DB_SERVER")
+DB_PORT = read_secret("DB_PORT")
+DB_NAME = read_secret("DB_NAME")
+DB_DRIVER = read_secret("DB_DRIVER")
+DB_DRIVER_ENCODED = quote_plus(str(DB_DRIVER))
 
 conn_str = (
     f"mssql+pyodbc://{DB_USER}:{DB_PASSWORD}"
