@@ -31,6 +31,8 @@ git rm --cached config.json
 
 python buddhamAI_cli.py ""
 
+pip install -r requirements.txt
+
 pip install faiss-cpu
 pip install numpy
 pip install ollama
