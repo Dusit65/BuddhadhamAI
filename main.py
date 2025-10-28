@@ -139,10 +139,15 @@ class TaskManager:
             else:
                 self.results[taskId] = {"status": "error", "error": err, "args": args, "chatId": chatId}
                 self.status[taskId] = "error"
+                socket_emit("task", payload)
                 log(f"[TaskManager] Task {taskId} error: {err}")
 
         except Exception as e:
             self.results[taskId] = {"status": "error", "error": str(e), "args": args, "chatId": chatId}
+            payload = {
+                    "taskId": taskId,
+                    "message": "เกิดข้อผิดพลาด"
+                }
             self.status[taskId] = "error"
             log(f"[TaskManager] Task {taskId} exception: {e}")
 

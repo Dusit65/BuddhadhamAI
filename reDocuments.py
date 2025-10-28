@@ -11,17 +11,47 @@ EMB_PATH = "embeddings.npy"
 META_PATH = "metadata.pkl"
 STATUS_FILE = "embed_status.json"
 
+def chunk_text(text, max_length=1000):
+    """แบ่งข้อความเป็น chunks ไม่เกิน max_length ตัวอักษร"""
+    words = text.split()
+    chunks = []
+    chunk = []
+    count = 0
+
+    for word in words:
+        count += len(word) + 1  # +1 สำหรับ space
+        chunk.append(word)
+        if count >= max_length:
+            chunks.append(" ".join(chunk))
+            chunk = []
+            count = 0
+    if chunk:
+        chunks.append(" ".join(chunk))
+    return chunks
+
 def create_and_save_embeddings_and_metadata(docs):
     embeddings = []
     for doc in docs:
         content = doc.get("content", "")
         if not content:
             continue
-        emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=content)['embedding']
-        embeddings.append(emb)
+
+        # แบ่งเป็น chunks
+        chunks = chunk_text(content, max_length=1000)  # ปรับตามโมเดล
+        chunk_embeddings = []
+        for chunk in chunks:
+            emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=chunk)['embedding']
+            chunk_embeddings.append(np.array(emb, dtype='float32'))
+
+        # รวม embeddings ของ chunks เป็น embedding เดียว (ใช้ mean)
+        doc_embedding = np.mean(chunk_embeddings, axis=0)
+        embeddings.append(doc_embedding)
+
     embeddings = np.array(embeddings, dtype='float32')
+
     log(f"กำลังสร้าง {EMB_PATH}")
     np.save(EMB_PATH, embeddings)
+
     with open(META_PATH, 'wb') as f:
         pickle.dump(docs, f)
     log(f"บันทึก metadata ลง {META_PATH}")
