@@ -161,7 +161,9 @@ try:
         return any(phrase in text for phrase in rejection_phrases)
 
     def ask(query, index, metadata, top_k=None, max_distance=None):
-        top_k=len(query) if top_k is None else top_k
+        top_k = len(query) if top_k is None else top_k
+        if top_k > 10:
+            top_k = 10
         global start
         results = search(query, index, metadata, top_k, max_distance=max_distance)
 
