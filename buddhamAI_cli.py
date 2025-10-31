@@ -100,12 +100,12 @@ try:
         log(f"Searching for references for: {query} with top_k={top_k} and max_distance={max_distance}")
 
         # Create embedding for query
-        q_emb = ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']
-        q_emb = np.array([q_emb], dtype='float32')
+        q_emb = np.array([ollama.embeddings(model='nomic-embed-text:v1.5', prompt=query)['embedding']], dtype='float32')
 
-        # Search for nearest neighbors
-        distances, ids = index.search(q_emb, top_k)
-        log(f"Found {len(ids[0])} nearest neighbors")
+        # Fetch more from FAISS เผื่อ filter max_distance
+        fetch_k = top_k * 5
+        distances, ids = index.search(q_emb, fetch_k)
+        log(f"Found {len(ids[0])} nearest neighbors (fetched {fetch_k})")
 
         results = []
         filtered_out_results = []
@@ -114,39 +114,40 @@ try:
         for i, idx in enumerate(ids[0]):
             if idx >= len(metadata):
                 continue
+
             dist = distances[0][i]
             doc = metadata[idx]
-
-            # create hash from content
             doc_hash = hashlib.md5(doc['content'].encode('utf-8')).hexdigest()
 
-            # if dup or > max_distance
+            # filter duplicates และ max_distance
             if doc_hash in seen_docs or (max_distance is not None and dist > max_distance):
                 filtered_out_results.append((doc, dist, idx))
                 log(f"index={idx}, distance={dist:.4f} removed")
                 continue
 
-            # store results with index and distance
             results.append({
                 "doc": doc,
                 "distance": dist,
                 "index": idx
             })
             seen_docs.add(doc_hash)
+            log(f"index={idx}, distance={dist:.4f} added")
 
-            # log index and distance of each item
-            log(f"index={idx}, distance={dist:.4f}")
+            # stop เมื่อได้ top_k
+            if len(results) >= top_k:
+                break
 
         log(f"Searching for references found {len(results)} items: {short_references([r['doc'] for r in results])}")
 
         if filtered_out_results:
             contexts = [f"{doc['content']}" for doc, _, _ in filtered_out_results]
             full_context = "\n".join(contexts)
-            log(metadata[0])
-            log(f"References {len(filtered_out_results)} items: {short_references([doc for doc, _, _ in filtered_out_results])}")
-            log(f"Filtered out references:\n{full_context}")
+            log(f"Filtered out references {len(filtered_out_results)} items: {short_references([doc for doc, _, _ in filtered_out_results])}")
+            log(f"Filtered out contexts:\n{full_context}")
 
         return results
+
+        
     def short_references(metadata):
         sorted_docs = sorted(metadata, key=lambda d: (d['bookName'], d['chapterName']))
         return ", ".join([
