@@ -196,16 +196,12 @@ try:
         end = time.perf_counter()
         processing_time = format_duration(end - start)
         log(f"Asked \"{model}\" finished in {processing_time}")
-        if not check_rejection_message(answer):
+        if not check_rejection_message(answer) and not check_greeting_message(answer):
             return {
                 "answer": answer,
                 "references": ref_text,
                 "duration": processing_time
             }
-        elif check_greeting_message(answer):
-             return {"answer": answer,
-                "duration": processing_time
-                }
         else:
             return {
                 "answer": answer,
