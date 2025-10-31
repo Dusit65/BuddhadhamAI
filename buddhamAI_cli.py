@@ -156,7 +156,9 @@ try:
 
     def check_rejection_message(text: str) -> bool:
         rejection_phrases = [
-            "ไม่สามารถตอบคำถาม"
+            "ไม่สามารถตอบคำถาม",
+            "ไม่แน่ใจว่าต้องการขออะไรจากข้อมูลนี้",
+            "คุณช่วยชี้แจงเพิ่มเติมได้ไหม"
         ]
         return any(phrase in text for phrase in rejection_phrases)
 
