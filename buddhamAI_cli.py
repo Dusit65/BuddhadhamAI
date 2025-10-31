@@ -22,7 +22,8 @@ try:
             os.system('cls')
         else:  # Unix/Linux/Mac
             os.system('clear')
-    
+    with open("buddhamAI_cli.log", "w") as f:
+        pass
     log_file = "buddhamAI_cli.log"
     required_models = ["gpt-oss:20b", "nomic-embed-text:v1.5"]
     EMB_PATH = "embeddings.npy"
@@ -168,6 +169,11 @@ try:
     def check_greeting_message(text: str) -> bool:
         greeting_phrases = [
             "สวัสดีครับ",
+            "สวัสดีค่ะ",
+            "สวัสดีค่ะ/ครับ",
+            "สวัสดีครับ/ค่ะ",
+            "ไม่เป็นไรเลยครับ/ค่ะ",
+            
         ]
         return any(phrase in text for phrase in greeting_phrases)
 
