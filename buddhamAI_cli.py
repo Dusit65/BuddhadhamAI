@@ -163,6 +163,12 @@ try:
             "เพื่อให้ตอบได้ตรงประเด็น"
         ]
         return any(phrase in text for phrase in rejection_phrases)
+    
+    def check_greeting_message(text: str) -> bool:
+        greeting_phrases = [
+            "สวัสดีครับ",
+        ]
+        return any(phrase in text for phrase in greeting_phrases)
 
     def ask(query, index, metadata, top_k=None, max_distance=None):
         top_k = len(query) if top_k is None else top_k
@@ -196,6 +202,10 @@ try:
                 "references": ref_text,
                 "duration": processing_time
             }
+        elif check_greeting_message(answer):
+             return {"answer": answer,
+                "duration": processing_time
+                }
         else:
             return {
                 "answer": answer,
