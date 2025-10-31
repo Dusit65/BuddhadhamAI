@@ -204,9 +204,7 @@ try:
             }
         else:
             return {
-                "answer": answer,
-                "references": "",
-                "duration": processing_time
+                "answer": answer
             }
     
     def read_last_embed_time():
