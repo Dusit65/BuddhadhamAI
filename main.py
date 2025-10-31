@@ -123,7 +123,7 @@ class TaskManager:
 
                 self.results[taskId] = {"status": "done", "data": data_obj, "args": args, "chatId": chatId}
                 self.status[taskId] = "done"
-                message = f"{data_obj['data'].get('answer', '')}\n\nอ้างอิงข้อมูลจาก {data_obj['data'].get('references', '')}\n\nใช้เวลา {data_obj['data'].get('duration', '')}"
+                message = f"{data_obj['data'].get('answer', '')}\n\n {data_obj['data'].get('references', '')}\n\n {data_obj['data'].get('duration', '')}"
                 payload = {
                     "taskId": taskId,
                     "message": message

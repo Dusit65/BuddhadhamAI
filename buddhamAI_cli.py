@@ -199,8 +199,8 @@ try:
         if not check_rejection_message(answer) and not check_greeting_message(answer):
             return {
                 "answer": answer,
-                "references": ref_text,
-                "duration": processing_time
+                "references": f"อ้างอิงข้อมูลจาก {ref_text}",
+                "duration": f'ใช้เวลา {processing_time}'
             }
         else:
             return {
